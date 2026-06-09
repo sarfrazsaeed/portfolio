@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sarfraz Saeed | Front-End Developer Portfolio</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="ContactForm.css">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -104,6 +107,7 @@
     <!-- Skills -->
     <section class="skills" id="skills">
         <h1>SKILLS</h1>
+        <div class="skill-card-container">
         <div class="skill-card">
             <div class="currently skills"><strong>Currently Learning:</strong></div>
             <ul>
@@ -114,6 +118,7 @@
                 <li>Git & GitHub</li>
             </ul>
         </div>
+        
         <div class="skill-card">
             <div class="coming skills"><strong>Coming Soon:</strong></div>
             <ul>
@@ -134,11 +139,12 @@
                 <li>Cloud Deployment</li>
             </ul>
         </div>
+    </div>
     </section>
 
     <!-- Roadmap -->
     <section class="education" id="roadmap">
-        <h1 id="educationOne">My Learning Roadmap</h1>
+        <h1 id="roadmapOne">My Learning Roadmap</h1>
 
         <div class="education-degree">Phase 1 — Frontend Foundations</div>
         <div class="education-school">Month 1-2 | Completed</div>
@@ -193,39 +199,39 @@
     <section class="projects" id="projects">
         <h1>PROJECTS</h1>
 
-        <div><strong>Project 1 — Completed </strong><br>
+        <div><strong class="badge-done">Project 1 — Completed ✓</strong><br>
             <b>SmartHire — HR Job Matching System</b></div>
         <p>A web-based HR management tool with candidate registration, job posting,
             and skill-based matching with percentage scores. Built with HTML, CSS,
             Bootstrap and JavaScript. Deployed live on GitHub Pages.
             <strong>Technologies: HTML5, CSS3, Bootstrap 5, JavaScript</strong></p>
 
-        <div><strong>Project 2 — Completed </strong><br>
+        <div><strong class="badge-done">Project 2 — Completed ✓</strong><br>
             <b>Personal Portfolio Website</b></div>
         <p>A professional dark theme portfolio website showcasing my journey,
             skills, education, roadmap and projects. Fully responsive single-page layout.
             Live at sarfrazsaeed.github.io/portfolio
             <strong>Technologies: HTML5, CSS3, GitHub Pages</strong></p>
 
-        <div><b>Project 3 — Planned Month 2</b><br>
+        <div><strong class="badge-planned">Project 3 — Planned Month 2</strong><br>
             <b>Weather App</b></div>
         <p>A weather application using a live weather API to display current
             conditions and forecasts with JavaScript DOM manipulation.
             <b>Technologies: JavaScript, API Integration, DOM</b></p>
 
-        <div><strong>Project 4 — Planned Month 4</strong><br>
+        <div><strong class="badge-planned">Project 4 — Planned Month 4</strong><br>
             <b>Python Django Blog</b></div>
         <p>A full featured blog application built with Django — user authentication,
             CRUD operations, database integration and admin panel.
             <b>Technologies: Python, Django, SQLite, Bootstrap</b></p>
 
-        <div><strong>Project 5 — Planned Month 5</strong><br>
+        <div><strong class="badge-planned">Project 5 — Planned Month 5</strong><br>
             <b>Django E-Commerce Platform</b></div>
         <p>A full stack e-commerce application with Django backend, product management,
             user authentication and MySQL database.
             <b>Technologies: Python, Django, MySQL, Bootstrap 5</b></p>
 
-        <div><strong>Project 6 — Planned Month 6 🎯</strong><br>
+        <div><strong class="badge-planned">Project 6 — Planned Month 6 🎯</strong><br>
             <b>AI-Powered Django SaaS Tool</b></div>
         <p>An AI-powered web application built with Django — integrating LLM APIs
             to build a smart tool such as AI resume optimizer or content generator.
@@ -259,17 +265,29 @@
     <!-- Contacts -->
     <section class="contacts" id="contacts">
         <h1>Contacts</h1>
+        <div class="contacts-grid">
+        <div id="contact-form-root"></div>
         <div>
             <b>Location:</b> Islamabad, Pakistan<br>
             <b>Email:</b> <a href="mailto:sarfrazsaeed095@gmail.com">sarfrazsaeed095@gmail.com</a><br>
             <b>Freelance:</b> <a href="https://www.fiverr.com/s/LdrlpXo" target="_blank">Available on Fiverr</a><br>
             <b>GitHub:</b> <a href="https://github.com/sarfrazsaeed" target="_blank">github.com/sarfrazsaeed</a><br>
             <b>Portfolio:</b> <a href="https://sarfrazsaeed.github.io/portfolio" target="_blank">sarfrazsaeed.github.io/portfolio</a><br>
-            <b>Wellfound:</b> <a href="https://wellfound.com/u/sarfraz-saeed" target="_blank">wellfound.com/u/sarfraz-saeed</a>
+            <b>Wellfound:</b> <a href="https://wellfound.com/u/sarfraz-saeed" target="_blank">wellfound.com/u/sarfraz-saeed</a><br>
+            <b>Contra:</b> <a href="https://contra.com/sarfraz_saeed_cgu5m8w9" target="_blank">contra.com/sarfraz_saeed_cgu5m8w9</a><br>
+            <b>Upwork:</b> <a href="https://www.upwork.com/freelancers/~010ac1b04029161d54?mp_source=share" target="_blank">/www.upwork.com</a><br>
+            <b>People Per Hour:</b> <a href="https://pph.me/sarfrazsaeed" target="_blank">pph.me/sarfrazsaeed</a>
+        </div>
         </div>
     </section>
 
-    <footer>Built with HTML and CSS by Sarfraz Saeed — Django Full Stack & AI Developer | Islamabad, Pakistan 🇵🇰</footer>
-
+    <footer>
+        <span style="color: var(--gold);">Sarfraz Saeed</span> &nbsp;·&nbsp; 
+        Built with HTML, CSS, JavaScript &amp; React &nbsp;·&nbsp; 
+        Django Full Stack &amp; AI Developer &nbsp;·&nbsp; 
+        Islamabad, Pakistan 🇵🇰
+      </footer>
+    <script src="script.js"></script>
+    <script src="ContactForm.js"></script>
 </body>
 </html>
