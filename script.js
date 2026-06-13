@@ -108,7 +108,7 @@ revealElements.forEach(el => revealObserver.observe(el));
    5. typing the animation on hero subtitle text
    (types the paragraph text character by character)
  */
-const heroPara = document.querySelector('#home .hero.content p, #home .hero-content p, .hero-content > div > p');
+   const heroPara = document.querySelector('#home .hero.content p');
 
 if (heroPara) {
   const originalText = heroPara.textContent.trim();

@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sarfraz Saeed | Front-End Developer Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="ContactForm.css">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 </head>
 <body>
 
@@ -37,6 +37,20 @@
             <p>
                 A passionate developer from Islamabad, Pakistan — building my path as a Django Full Stack Developer with a focus on AI-powered web applications.
             </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">10+</span>
+                    <span class="stat-label">Technologies</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">3</span>
+                    <span class="stat-label">Projects Built</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">Phase Roadmap</span>
+                </div>
+            </div>
         </div>
         <div>
             <button>
@@ -108,38 +122,40 @@
     <section class="skills" id="skills">
         <h1>SKILLS</h1>
         <div class="skill-card-container">
-        <div class="skill-card">
-            <div class="currently skills"><strong>Currently Learning:</strong></div>
-            <ul>
-                <li>HTML5 & CSS3</li>
-                <li>Bootstrap 5</li>
-                <li>JavaScript ES6+</li>
-                <li>React.js</li>
-                <li>Git & GitHub</li>
-            </ul>
+            <div class="skill-card">
+                <div class="currently skills"><strong>✅ Learned — Frontend:</strong></div>
+                <ul>
+                    <li>HTML5 & CSS3</li>
+                    <li>JavaScript ES6+</li>
+                    <li>React.js</li>
+                    <li>TypeScript</li>
+                    <li>Tailwind CSS</li>
+                    <li>Bootstrap 5</li>
+                    <li>Git & GitHub</li>
+                </ul>
+            </div>
+            
+            <div class="skill-card">
+                <div class="coming skills"><strong>⏳ Coming Soon — Backend:</strong></div>
+                <ul>
+                    <li>Python</li>
+                    <li>Django</li>
+                    <li>SQL & Databases</li>
+                    <li>REST APIs</li>
+                    <li>Django REST Framework</li>
+                </ul>
+            </div>
+            <div class="skill-card">
+                <div><strong>🎯 Future Goals:</strong></div>
+                <ul>
+                    <li>AI & LLM Integration</li>
+                    <li>TensorFlow / PyTorch</li>
+                    <li>JWT Authentication</li>
+                    <li>Cloud Deployment</li>
+                    <li>Docker & DevOps</li>
+                </ul>
+            </div>
         </div>
-        
-        <div class="skill-card">
-            <div class="coming skills"><strong>Coming Soon:</strong></div>
-            <ul>
-                <li>Python</li>
-                <li>Django</li>
-                <li>SQL & Databases</li>
-                <li>REST APIs</li>
-                <li>Version Control</li>
-            </ul>
-        </div>
-        <div class="skill-card">
-            <div><strong>Future Goals:</strong></div>
-            <ul>
-                <li>AI & LLM Integration</li>
-                <li>Django REST Framework</li>
-                <li>TensorFlow / PyTorch</li>
-                <li>JWT Authentication</li>
-                <li>Cloud Deployment</li>
-            </ul>
-        </div>
-    </div>
     </section>
 
     <!-- Roadmap -->
@@ -147,50 +163,46 @@
         <h1 id="roadmapOne">My Learning Roadmap</h1>
 
         <div class="education-degree">Phase 1 — Frontend Foundations</div>
-        <div class="education-school">Month 1-2 | Completed</div>
+        <div class="education-school">Completed</div>
         <div class="education-detail">
             HTML5, CSS3, Bootstrap 5, Responsive Design,
-            JavaScript basics, Git & GitHub, React Introduction.
-            Meta Course 1 — COMPLETED 
+            JavaScript basics, Git & GitHub, Version Control.
         </div>
 
-        <div class="education-degree">Phase 2 ⏳ — JavaScript & Version Control</div>
-        <div class="education-school">Month 2-3 | In Progress</div>
+        <div class="education-degree">Phase 2 — JavaScript & Version Control</div>
+        <div class="education-school">Completed</div>
         <div class="education-detail">
-            Programming with JavaScript, ES6+, DOM Manipulation,
-            Version Control with Git. Meta Courses 2 & 3 — In Progress.
+            JavaScript ES6+, DOM Manipulation, Event Handling,
+            Async JS, Git branching & GitHub workflows.
         </div>
 
-        <div class="education-degree">Phase 3 ⏳ — React Frontend</div>
-        <div class="education-school">Month 3-4 | Coming Soon</div>
+        <div class="education-degree">Phase 3 — React & Modern Frontend</div>
+        <div class="education-school">Completed</div>
         <div class="education-detail">
-            HTML & CSS in Depth, React Basics, Advanced React,
-            Component architecture, State management.
-            Meta Courses 4, 5 & 6 — Planned.
+            React.js, TypeScript, Tailwind CSS, Component architecture,
+            State management, Props, Hooks, Responsive UI.
         </div>
 
         <div class="education-degree">Phase 4 ⏳ — Python & Databases</div>
-        <div class="education-school">Month 4-5 | Coming Soon</div>
+        <div class="education-school">In Progress</div>
         <div class="education-detail">
             Python programming, OOP concepts, SQL, MySQL,
             Relational Databases, Back-End Integration.
-            Meta Courses 7 & 8 — Planned.
         </div>
 
         <div class="education-degree">Phase 5 ⏳ — Django Full Stack</div>
-        <div class="education-school">Month 5 | Coming Soon</div>
+        <div class="education-school">Coming Soon</div>
         <div class="education-detail">
             Django Framework, Models, Views, Templates,
             Django REST Framework, APIs, Authentication.
-            Meta Courses 9 & 10 — Planned.
         </div>
 
         <div class="education-degree">Phase 6 🎯 — AI Integration</div>
-        <div class="education-school">Month 6 | Final Goal</div>
+        <div class="education-school">Final Goal</div>
         <div class="education-detail">
             Integrating AI/LLM APIs with Django,
             Building AI-powered web applications,
-            Deploying to production, Freelancing on Fiverr.
+            Deploying to production, Freelancing on Fiverr & Upwork.
         </div>
 
     </section>
@@ -202,22 +214,26 @@
         <div><strong class="badge-done">Project 1 — Completed ✓</strong><br>
             <b>SmartHire — HR Job Matching System</b></div>
         <p>A web-based HR management tool with candidate registration, job posting,
-            and skill-based matching with percentage scores. Built with HTML, CSS,
-            Bootstrap and JavaScript. Deployed live on GitHub Pages.
-            <strong>Technologies: HTML5, CSS3, Bootstrap 5, JavaScript</strong></p>
+            and skill-based matching with percentage scores. Features data visualization
+            charts, TypeScript type safety, and a fully responsive Tailwind UI.
+            Deployed live on GitHub Pages.
+            <strong>Technologies: HTML5, CSS3, JavaScript ES6+, TypeScript, React 18, Tailwind CSS, Bootstrap 5, Chart.js, ESLint + Prettier, GitHub Pages</strong></p>
 
-        <div><strong class="badge-done">Project 2 — Completed ✓</strong><br>
-            <b>Personal Portfolio Website</b></div>
-        <p>A professional dark theme portfolio website showcasing my journey,
-            skills, education, roadmap and projects. Fully responsive single-page layout.
-            Live at sarfrazsaeed.github.io/portfolio
-            <strong>Technologies: HTML5, CSS3, GitHub Pages</strong></p>
+            <div><strong class="badge-done">Project 2 — Completed ✓</strong><br>
+                <b>Personal Portfolio Website</b></div>
+            <p>A professional dark-theme portfolio website with scroll progress bar,
+                typing animation, scroll-reveal effects, active nav highlighting,
+                mobile hamburger menu, and a React-powered validated contact form.
+                Fully responsive single-page layout. Deployed live on GitHub Pages.
+                <strong>Technologies: HTML5, CSS3, JavaScript ES6+, React.js, GitHub Pages</strong></p>
 
-        <div><strong class="badge-planned">Project 3 — Planned Month 2</strong><br>
-            <b>Weather App</b></div>
-        <p>A weather application using a live weather API to display current
-            conditions and forecasts with JavaScript DOM manipulation.
-            <b>Technologies: JavaScript, API Integration, DOM</b></p>
+            <div><strong class="badge-planned">Project 3 — In Progress</strong><br>
+                <b>SaaS Landing Page — React + Tailwind</b></div>
+            <p>A fully responsive, pixel-perfect multi-section SaaS product landing page
+                with animated hero, features grid, pricing table, testimonials, and
+                contact form. Smooth scroll animations and mobile-first design.
+                Deployed live on GitHub Pages.
+                <b>Technologies: React.js, TypeScript, Tailwind CSS, Framer Motion</b></p>
 
         <div><strong class="badge-planned">Project 4 — Planned Month 4</strong><br>
             <b>Python Django Blog</b></div>
@@ -283,7 +299,7 @@
 
     <footer>
         <span style="color: var(--gold);">Sarfraz Saeed</span> &nbsp;·&nbsp; 
-        Built with HTML, CSS, JavaScript &amp; React &nbsp;·&nbsp; 
+        Built with HTML · CSS · JavaScript · React · TypeScript · Tailwind &nbsp;·&nbsp; 
         Django Full Stack &amp; AI Developer &nbsp;·&nbsp; 
         Islamabad, Pakistan 🇵🇰
       </footer>
