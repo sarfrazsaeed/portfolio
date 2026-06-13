@@ -1,44 +1,34 @@
 # Sarfraz Saeed — Front-End Developer Portfolio
 
-A premium dark-theme personal portfolio website showcasing my journey,
-skills, projects, and roadmap as a developer from Islamabad, Pakistan.
+A premium dark-theme portfolio website built with HTML, CSS, JavaScript and React 18.
 
 ## 🌐 Live Site
-🔗 https://sarfrazsaeed.github.io/portfolio
+🔗 **https://sarfrazsaeed.github.io/portfolio**
 
 ---
 
-## ✨ Features
-
-- 🎨 Premium dark navy + gold design with gradient text effects
-- 📱 Fully responsive — mobile, tablet, and desktop
-- ⚡ Scroll reveal animations with spring easing
-- 🍔 Mobile hamburger menu
-- 📊 Scroll progress bar (gold gradient)
-- ✍️ Typing animation on hero subtitle
-- 🧭 Active nav link highlighting on scroll
-- 💬 React 18 contact form with live validation
-- 🏷️ Skill pill badges with JetBrains Mono font
-- 📈 Hero stats row (Technologies · Projects · Roadmap)
-- ✨ Card hover effects — lift, glow, shimmer
-- 🔢 Section heading gold underline accents
-- 🌊 Floating hero availability badge animation
+## 🛠️ Built With
+HTML5 · CSS3 · JavaScript ES6+ · React 18 · GitHub Pages
 
 ---
 
-## 🛠️ Technologies Used
-
-| Technology | Purpose |
-|---|---|
-| HTML5 | Structure & semantic markup |
-| CSS3 | Styling, animations, responsive layout |
-| JavaScript ES6+ | DOM manipulation, scroll effects, animations |
-| React 18 (CDN) | Contact form with hooks & validation |
-| JetBrains Mono | Monospace font for skill tags & tech badges |
-| Playfair Display | Serif font for headings |
-| Inter | Body text font |
-| GitHub Pages | Live deployment |
+## ✨ Highlights
+- Premium dark navy + gold design
+- Fully responsive — mobile, tablet, desktop
+- Scroll reveal animations & typing effect
+- React 18 contact form with live validation
+- Mobile hamburger menu & scroll progress bar
 
 ---
 
-## 📂 Project Structure
+## 📬 Hire Me
+[Fiverr](https://www.fiverr.com/s/LdrlpXo) 
+[Upwork](https://www.upwork.com/freelancers/~010ac1b04029161d54) 
+[Contra](https://contra.com/sarfraz_saeed_cgu5m8w9) 
+[PeoplePerHour](https://pph.me/sarfrazsaeed)
+
+📧 sarfrazsaeed095@gmail.com
+
+---
+
+*© 2026 Sarfraz Saeed · Islamabad, Pakistan 🇵🇰*
