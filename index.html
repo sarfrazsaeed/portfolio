@@ -1,309 +1,739 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarfraz Saeed | Front-End Developer Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="ContactForm.css">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sarfraz Saeed — Frontend Developer</title>
+  <meta name="description" content="Frontend Developer building production React 18 apps with TypeScript, GSAP, and Framer Motion. CS @ Air University Islamabad." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --ink:      #0A0A0B;
+      --ink-2:    #111114;
+      --ink-3:    #18181C;
+      --rule:     rgba(255,255,255,0.07);
+      --soft:     #6B6B7B;
+      --body:     #A0A0B0;
+      --text:     #E8E8F0;
+      --accent:   #FF4D00;
+      --accent-2: #FF8C42;
+      --green:    #00D084;
+      --mono:     'DM Mono', monospace;
+      --serif:    'DM Serif Display', Georgia, serif;
+      --sans:     'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body { background: var(--ink); color: var(--text); font-family: var(--sans); line-height: 1.7; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* ── PROGRESS ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      z-index: 9999; transition: width 0.1s linear;
+    }
+
+    /* ── CURSOR ── */
+    #cur { position: fixed; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); mix-blend-mode: screen; transition: transform 0.15s; }
+    #cur-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(255,77,0,0.4); border-radius: 50%; pointer-events: none; z-index: 9997; transform: translate(-50%,-50%); transition: width 0.3s, height 0.3s, border-color 0.3s; }
+    body:has(a:hover) #cur-ring, body:has(button:hover) #cur-ring { width: 48px; height: 48px; border-color: var(--accent); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1.5rem, 5vw, 4rem);
+      border-bottom: 1px solid transparent;
+      transition: background 0.4s, border-color 0.4s;
+    }
+    nav.scrolled { background: rgba(10,10,11,0.92); backdrop-filter: blur(20px); border-color: var(--rule); }
+
+    .nav-logo { font-family: var(--serif); font-size: 1.25rem; color: var(--text); }
+    .nav-logo em { color: var(--accent); font-style: normal; }
+
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+
+    .nav-hire { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(255,77,0,0.35); padding: 0.45rem 1.1rem; border-radius: 3px; transition: all 0.25s; }
+    .nav-hire:hover { background: var(--accent); color: #fff; }
+
+    #hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; }
+    #hamburger span { display: block; width: 20px; height: 1.5px; background: var(--body); transition: all 0.3s; }
+    #hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    #hamburger.open span:nth-child(2) { opacity: 0; }
+    #hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 60px clamp(1.5rem, 5vw, 4rem) clamp(3rem, 8vh, 5rem);
+      position: relative; overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 40%, rgba(255,77,0,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 20% 70%, rgba(255,140,66,0.04) 0%, transparent 50%);
+    }
+
+    /* subtle grid */
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: linear-gradient(var(--rule) 1px, transparent 1px), linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 40%, transparent 100%);
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 900px; }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 2rem; opacity: 0;
+    }
+    .hero-tag::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+
+    .hero-h1 {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 9vw, 7.5rem);
+      line-height: 0.95; letter-spacing: -0.02em;
+      color: var(--text); margin-bottom: 2rem; overflow: hidden;
+    }
+    .hero-h1 .line { display: block; overflow: hidden; }
+    .hero-h1 .line span { display: inline-block; opacity: 0; transform: translateY(110%); }
+    .hero-h1 em { font-style: italic; color: var(--accent); }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.15rem); color: var(--body); max-width: 520px;
+      line-height: 1.8; margin-bottom: 2.5rem; opacity: 0;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; margin-bottom: 4rem; }
+
+    .btn-fill {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent); color: #fff;
+      font-size: 0.82rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.85rem 1.8rem; border-radius: 3px;
+      transition: all 0.25s; border: 1px solid var(--accent);
+    }
+    .btn-fill:hover { background: var(--accent-2); border-color: var(--accent-2); transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--body); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 0.85rem 1.8rem; border-radius: 3px; border: 1px solid var(--rule);
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    /* hero stats row */
+    .hero-stats {
+      display: flex; gap: 3rem; flex-wrap: wrap; opacity: 0;
+      border-top: 1px solid var(--rule); padding-top: 2rem;
+    }
+    .hstat { }
+    .hstat-n { font-family: var(--serif); font-size: 2.5rem; color: var(--text); line-height: 1; }
+    .hstat-n span { color: var(--accent); }
+    .hstat-l { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft); margin-top: 0.25rem; }
+
+    /* ── SECTION BASE ── */
+    .section { padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem); }
+    .section--dim { background: var(--ink-2); }
+    .section--darker { background: var(--ink-3); }
+
+    .s-label { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; display: block; }
+    .s-title { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); color: var(--text); margin-bottom: 3rem; line-height: 1.1; }
+
+    /* reveal */
+    .r { opacity: 0; transform: translateY(32px); }
+
+    /* ── ABOUT ── */
+    .about-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; max-width: 1100px; }
+    .about-text p { color: var(--body); font-size: 1rem; line-height: 1.9; margin-bottom: 1.25rem; max-width: 500px; }
+    .about-text strong { color: var(--text); font-weight: 600; }
+
+    .about-aside { }
+    .a-card {
+      border: 1px solid var(--rule); border-radius: 4px; padding: 1.75rem 2rem;
+      background: var(--ink-3); position: relative; overflow: hidden;
+    }
+    .a-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, var(--accent), transparent); }
+    .a-row { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.75rem 0; border-bottom: 1px solid var(--rule); }
+    .a-row:last-child { border-bottom: none; }
+    .a-ico { font-size: 0.9rem; width: 28px; height: 28px; background: rgba(255,77,0,0.08); border: 1px solid rgba(255,77,0,0.15); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+    .a-main { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+    .a-sub { font-size: 0.8rem; color: var(--soft); margin-top: 0.1rem; }
+
+    /* ── SKILLS ── */
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; border: 1px solid var(--rule); max-width: 1100px; }
+    .sk-cell {
+      background: var(--ink-2); padding: 1.75rem 2rem;
+      transition: background 0.25s;
+    }
+    .sk-cell:hover { background: var(--ink-3); }
+    .sk-head { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.25rem; }
+    .sk-ico { font-size: 1rem; }
+    .sk-name { font-size: 0.82rem; font-weight: 600; color: var(--text); letter-spacing: 0.02em; }
+    .sk-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .sk-tag { font-family: var(--mono); font-size: 0.68rem; color: var(--soft); background: rgba(255,255,255,0.04); border: 1px solid var(--rule); padding: 0.22rem 0.6rem; border-radius: 2px; transition: color 0.2s, border-color 0.2s; }
+    .sk-cell:hover .sk-tag { color: var(--body); border-color: rgba(255,77,0,0.2); }
+
+    /* ── PROJECTS ── */
+    .proj-list { display: flex; flex-direction: column; gap: 0; max-width: 1000px; border: 1px solid var(--rule); }
+    .proj {
+      display: grid; grid-template-columns: 64px 1fr auto;
+      gap: 0; align-items: stretch;
+      border-bottom: 1px solid var(--rule);
+      transition: background 0.25s;
+      cursor: default; position: relative;
+    }
+    .proj:last-child { border-bottom: none; }
+    .proj:hover { background: var(--ink-2); }
+
+    .proj-num {
+      display: flex; align-items: center; justify-content: center;
+      border-right: 1px solid var(--rule);
+      font-family: var(--mono); font-size: 0.72rem; color: var(--soft);
+      padding: 2rem 0; flex-shrink: 0;
+    }
+    .proj:hover .proj-num { color: var(--accent); }
+
+    .proj-body { padding: 2rem 2.5rem; }
+
+    .proj-status {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .proj-status.live { color: var(--green); }
+    .proj-status.live::before { content: ''; width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse-green 2s ease-in-out infinite; }
+    .proj-status.planned { color: var(--soft); }
+
+    @keyframes pulse-green {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .proj-title { font-family: var(--serif); font-size: 1.3rem; color: var(--text); margin-bottom: 0.5rem; }
+    .proj-desc { font-size: 0.88rem; color: var(--body); line-height: 1.75; margin-bottom: 1.25rem; max-width: 600px; }
+    .proj-tech { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.25rem; }
+    .proj-tag { font-family: var(--mono); font-size: 0.66rem; color: var(--accent); background: rgba(255,77,0,0.07); border: 1px solid rgba(255,77,0,0.18); padding: 0.2rem 0.6rem; border-radius: 2px; }
+    .proj-links { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .proj-link {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--soft); border: 1px solid var(--rule); padding: 0.35rem 0.85rem; border-radius: 2px;
+      transition: all 0.2s;
+    }
+    .proj-link:hover, .proj-link.primary { color: var(--accent); border-color: rgba(255,77,0,0.35); background: rgba(255,77,0,0.05); }
+
+    .proj-arrow {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 1.5rem; font-size: 1.2rem; color: var(--rule);
+      border-left: 1px solid var(--rule); flex-shrink: 0;
+      transition: color 0.25s, transform 0.25s;
+    }
+    .proj:hover .proj-arrow { color: var(--accent); transform: translate(3px, -3px); }
+
+    /* ── ROADMAP ── */
+    .road-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1px; border: 1px solid var(--rule); max-width: 1100px; }
+    .road-item { background: var(--ink-2); padding: 1.75rem 2rem; transition: background 0.25s; }
+    .road-item:hover { background: var(--ink-3); }
+    .road-phase { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); margin-bottom: 0.5rem; }
+    .road-title { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+    .road-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .road-desc { font-size: 0.82rem; color: var(--body); line-height: 1.6; margin-bottom: 0.75rem; }
+    .road-badge { display: inline-block; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.7rem; border-radius: 2px; }
+    .road-badge.done { color: var(--green); background: rgba(0,208,132,0.08); border: 1px solid rgba(0,208,132,0.2); }
+    .road-badge.wip { color: var(--accent-2); background: rgba(255,140,66,0.08); border: 1px solid rgba(255,140,66,0.2); }
+    .road-badge.soon { color: var(--soft); background: rgba(255,255,255,0.04); border: 1px solid var(--rule); }
+
+    /* ── EDUCATION ── */
+    .edu-list { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--rule); max-width: 700px; }
+    .edu-item { background: var(--ink-2); padding: 1.5rem 2rem; border-left: 2px solid transparent; transition: all 0.25s; }
+    .edu-item:hover { background: var(--ink-3); border-left-color: var(--accent); }
+    .edu-deg { font-size: 0.95rem; font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+    .edu-school { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); margin-bottom: 0.3rem; }
+    .edu-detail { font-size: 0.82rem; color: var(--body); }
+    .edu-status { display: inline-block; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.15rem 0.6rem; border-radius: 2px; margin-top: 0.6rem; }
+    .s-done { color: var(--green); background: rgba(0,208,132,0.08); border: 1px solid rgba(0,208,132,0.2); }
+    .s-wip  { color: var(--accent-2); background: rgba(255,140,66,0.08); border: 1px solid rgba(255,140,66,0.2); }
+
+    /* ── CERT ── */
+    .cert-card {
+      max-width: 680px; border: 1px solid var(--rule); border-radius: 4px; padding: 2.5rem;
+      background: var(--ink-2); position: relative; overflow: hidden; transition: all 0.35s;
+    }
+    .cert-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: linear-gradient(180deg, var(--accent), var(--accent-2)); }
+    .cert-card:hover { border-color: rgba(255,77,0,0.3); transform: translateX(4px); }
+    .cert-issuer { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .cert-title { font-family: var(--serif); font-size: 1.5rem; color: var(--text); margin-bottom: 0.75rem; }
+    .cert-desc { font-size: 0.88rem; color: var(--body); line-height: 1.75; margin-bottom: 0.75rem; }
+    .cert-tags { font-family: var(--mono); font-size: 0.72rem; color: var(--soft); margin-bottom: 1.5rem; }
+    .cert-btn { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--accent); color: #fff; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.7rem 1.5rem; border-radius: 3px; transition: all 0.25s; }
+    .cert-btn:hover { background: var(--accent-2); transform: translateY(-2px); }
+
+    /* ── CONTACT ── */
+    .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; max-width: 1000px; align-items: start; }
+
+    /* form */
+    .cf-title { font-family: var(--serif); font-size: 1.4rem; color: var(--text); margin-bottom: 1.75rem; }
+    .cf-field { margin-bottom: 1.1rem; }
+    .cf-label { display: block; font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); margin-bottom: 0.5rem; }
+    .cf-input {
+      width: 100%; background: var(--ink-3); border: 1px solid var(--rule);
+      border-radius: 3px; padding: 0.85rem 1rem; color: var(--text);
+      font-family: var(--sans); font-size: 0.88rem; outline: none; transition: border-color 0.2s;
+    }
+    .cf-input::placeholder { color: var(--soft); }
+    .cf-input:focus { border-color: rgba(255,77,0,0.5); }
+    .cf-input.err { border-color: rgba(255,80,80,0.5); }
+    .cf-error { font-family: var(--mono); font-size: 0.68rem; color: #f87171; margin-top: 0.25rem; }
+    .cf-ta { resize: vertical; min-height: 110px; }
+    .cf-submit { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 3px; padding: 0.9rem; font-family: var(--sans); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; cursor: pointer; transition: all 0.25s; margin-top: 0.25rem; }
+    .cf-submit:hover:not(:disabled) { background: var(--accent-2); transform: translateY(-2px); }
+    .cf-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+    .cf-ok { border: 1px solid rgba(0,208,132,0.25); border-radius: 4px; padding: 2.5rem; background: var(--ink-3); text-align: center; }
+    .cf-ok-ico { width: 48px; height: 48px; border-radius: 50%; background: rgba(0,208,132,0.1); border: 1px solid rgba(0,208,132,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--green); margin: 0 auto 1rem; }
+    .cf-ok h3 { font-family: var(--serif); font-size: 1.3rem; color: var(--text); margin-bottom: 0.5rem; }
+    .cf-ok p { font-size: 0.85rem; color: var(--body); margin-bottom: 1.25rem; }
+    .cf-ok button { background: none; border: 1px solid var(--rule); color: var(--body); font-family: var(--sans); font-size: 0.8rem; padding: 0.6rem 1.2rem; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .cf-ok button:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* contact info */
+    .ci-title { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); margin-bottom: 1.5rem; }
+    .ci-item { display: flex; align-items: center; gap: 0.9rem; padding: 0.75rem 0; border-bottom: 1px solid var(--rule); }
+    .ci-item:last-child { border-bottom: none; }
+    .ci-ico { width: 30px; height: 30px; border: 1px solid var(--rule); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; transition: border-color 0.2s; }
+    .ci-item:hover .ci-ico { border-color: rgba(255,77,0,0.35); }
+    .ci-lbl { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--soft); display: block; }
+    .ci-val { font-size: 0.85rem; color: var(--body); transition: color 0.2s; }
+    a.ci-val:hover { color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--rule); padding: 1.75rem clamp(1.5rem, 5vw, 4rem); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .f-left { font-family: var(--mono); font-size: 0.68rem; color: var(--soft); }
+    .f-left span { color: var(--accent); }
+    .f-links { display: flex; gap: 1.25rem; }
+    .f-link { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); transition: color 0.2s; }
+    .f-link:hover { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .nav-links { display: none; flex-direction: column; position: fixed; top: 60px; left: 0; right: 0; background: rgba(10,10,11,0.98); padding: 2rem 1.5rem; gap: 1.5rem; border-bottom: 1px solid var(--rule); align-items: center; }
+      .nav-links.open { display: flex; }
+      #hamburger { display: flex; }
+      .nav-hire { display: none; }
+      .about-wrap { grid-template-columns: 1fr; gap: 2.5rem; }
+      .contact-wrap { grid-template-columns: 1fr; }
+      .proj { grid-template-columns: 48px 1fr; }
+      .proj-arrow { display: none; }
+      .hero-stats { gap: 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
 </head>
 <body>
 
-    <nav>
-        <div>
-        <a href="#home" class="nav-logo">SS</a>
-        <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About Me</a></li>
-            <li><a href="#education">Education</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#roadmap">Roadmap</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#certifications">Certificates</a></li>
-            <li><a href="#contacts">Contacts</a></li>
-        </ul>
+<div id="progress-bar"></div>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#home" class="nav-logo">Sarfraz<em>.</em></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Work</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:sarfrazsaeed095@gmail.com" class="nav-hire">Hire Me</a>
+  <button id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">Frontend Developer — Islamabad, Pakistan</div>
+
+    <h1 class="hero-h1">
+      <span class="line"><span>Building</span></span>
+      <span class="line"><span><em>interfaces</em></span></span>
+      <span class="line"><span>that move.</span></span>
+    </h1>
+
+    <p class="hero-sub">
+      React 18 · TypeScript · Vite. I engineer production-grade UIs with GSAP animation systems, Framer Motion micro-interactions, and Zustand state — deployed with GitHub Actions. CS @ Air University Islamabad.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#projects" class="btn-fill">View Work ↓</a>
+      <a href="#contact" class="btn-ghost">Get in Touch</a>
+      <a href="https://github.com/sarfrazsaeed" target="_blank" class="btn-ghost">GitHub ↗</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">4<span>+</span></div><div class="hstat-l">Live Projects</div></div>
+      <div class="hstat"><div class="hstat-n">36<span>+</span></div><div class="hstat-l">Unit Tests</div></div>
+      <div class="hstat"><div class="hstat-n">10<span>+</span></div><div class="hstat-l">Technologies</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section section--dim">
+  <span class="s-label">// about</span>
+  <h2 class="s-title r">Who I Am</h2>
+
+  <div class="about-wrap">
+    <div class="about-text r">
+      <p>I'm <strong>Sarfraz Saeed</strong>, a frontend developer from <strong>Islamabad, Pakistan</strong>, studying Computer Science at Air University.</p>
+      <p>I build <strong>component-driven React 18 applications</strong> with strict TypeScript typesafety and Vite's build pipeline. My work spans e-commerce storefronts, food delivery platforms, and HR SaaS tools — each with <strong>GSAP ScrollTrigger animations</strong> and Framer Motion micro-interactions.</p>
+      <p>I'm currently learning <strong>Django REST Framework</strong> to move into full-stack development, with an eventual focus on AI-powered web applications.</p>
+    </div>
+    <div class="about-aside r">
+      <div class="a-card">
+        <div class="a-row"><div class="a-ico">🎓</div><div><div class="a-main">CS @ Air University Islamabad</div><div class="a-sub">Undergraduate · Currently enrolled</div></div></div>
+        <div class="a-row"><div class="a-ico">📍</div><div><div class="a-main">Islamabad, Pakistan</div><div class="a-sub">Available remotely worldwide</div></div></div>
+        <div class="a-row"><div class="a-ico">⚡</div><div><div class="a-main">4 Production Apps Shipped</div><div class="a-sub">React · TypeScript · GSAP · Zustand</div></div></div>
+        <div class="a-row"><div class="a-ico">🎯</div><div><div class="a-main">Learning Django REST Framework</div><div class="a-sub">Full stack + AI next</div></div></div>
+        <div class="a-row"><div class="a-ico">💼</div><div><div class="a-main">Open to Freelance & Remote</div><div class="a-sub">Fiverr · Upwork · Contra · PPH</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="section">
+  <span class="s-label">// skills</span>
+  <h2 class="s-title r">Tech Stack</h2>
+  <div class="skills-grid r">
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico">⚛️</span><span class="sk-name">Framework</span></div><div class="sk-tags"><span class="sk-tag">React 18</span><span class="sk-tag">TypeScript</span><span class="sk-tag">Vite</span><span class="sk-tag">React Router v6</span><span class="sk-tag">JSX / TSX</span></div></div>
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico">🎨</span><span class="sk-name">Styling</span></div><div class="sk-tags"><span class="sk-tag">Tailwind CSS</span><span class="sk-tag">CSS3</span><span class="sk-tag">HTML5</span><span class="sk-tag">Bootstrap 5</span><span class="sk-tag">CSS Variables</span></div></div>
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico">🎬</span><span class="sk-name">Animation</span></div><div class="sk-tags"><span class="sk-tag">GSAP 3</span><span class="sk-tag">ScrollTrigger</span><span class="sk-tag">Framer Motion</span><span class="sk-tag">CSS Animations</span></div></div>
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico">🗄️</span><span class="sk-name">State & Data</span></div><div class="sk-tags"><span class="sk-tag">Zustand</span><span class="sk-tag">React Hooks</span><span class="sk-tag">Context API</span><span class="sk-tag">Chart.js</span><span class="sk-tag">LocalStorage</span></div></div>
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico">🛠</span><span class="sk-name">Tooling & QA</span></div><div class="sk-tags"><span class="sk-tag">Git & GitHub</span><span class="sk-tag">Vitest</span><span class="sk-tag">ESLint</span><span class="sk-tag">GitHub Actions</span><span class="sk-tag">npm</span></div></div>
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico">📚</span><span class="sk-name">Learning Now</span></div><div class="sk-tags"><span class="sk-tag">Python</span><span class="sk-tag">Django</span><span class="sk-tag">DRF</span><span class="sk-tag">REST APIs</span><span class="sk-tag">PostgreSQL</span></div></div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="section section--dim">
+  <span class="s-label">// work</span>
+  <h2 class="s-title r">Selected Projects</h2>
+
+  <div class="proj-list r">
+
+    <div class="proj">
+      <div class="proj-num">01</div>
+      <div class="proj-body">
+        <div class="proj-status live">Live · Deployed</div>
+        <div class="proj-title">FoodieX — Pakistani Food Delivery App</div>
+        <div class="proj-desc">Full food ordering platform featuring 12 authentic Pakistani restaurants — KFC, Domino's, Cheezious, Bundoo Khan and more. Real-time cart, 3-step checkout, animated order tracking, and favorites — all state via Zustand. GSAP drives section transitions; Framer Motion handles menu and toast animations.</div>
+        <div class="proj-tech"><span class="proj-tag">React 18</span><span class="proj-tag">TypeScript</span><span class="proj-tag">GSAP</span><span class="proj-tag">Framer Motion</span><span class="proj-tag">Zustand</span><span class="proj-tag">Tailwind CSS</span></div>
+        <div class="proj-links">
+          <a href="https://sarfrazsaeed.github.io/foodiex/" target="_blank" class="proj-link primary">Live Demo ↗</a>
+          <a href="https://github.com/sarfrazsaeed/foodiex" target="_blank" class="proj-link">GitHub</a>
         </div>
-    </nav>
+      </div>
+      <div class="proj-arrow">↗</div>
+    </div>
 
-    <!-- Hero section -->
-    <section class="hero-content" id="home">
-        <div class="hero content">
-            <div class="hero-tag">Available for Freelance &amp; Remote Work</div>
-            <h1>Sarfraz Saeed</h1>
-            <p>
-                A passionate developer from Islamabad, Pakistan — building my path as a Django Full Stack Developer with a focus on AI-powered web applications.
-            </p>
-            <div class="hero-stats">
-                <div class="stat">
-                    <span class="stat-number">10+</span>
-                    <span class="stat-label">Technologies</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">3</span>
-                    <span class="stat-label">Projects Built</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">6</span>
-                    <span class="stat-label">Phase Roadmap</span>
-                </div>
-            </div>
+    <div class="proj">
+      <div class="proj-num">02</div>
+      <div class="proj-body">
+        <div class="proj-status live">Live · Deployed</div>
+        <div class="proj-title">ShopNest — Sneaker E-Commerce Storefront</div>
+        <div class="proj-desc">Dark luxury sneaker store with a 16-product catalog, GSAP ScrollTrigger scroll reveals, persistent cart and wishlist via Zustand, and a 3-step checkout with live form validation. Framer Motion drives all product card hover states and drawer transitions.</div>
+        <div class="proj-tech"><span class="proj-tag">React 18</span><span class="proj-tag">TypeScript</span><span class="proj-tag">GSAP + ScrollTrigger</span><span class="proj-tag">Framer Motion</span><span class="proj-tag">Zustand</span><span class="proj-tag">Tailwind CSS</span></div>
+        <div class="proj-links">
+          <a href="https://sarfrazsaeed.github.io/shopnest/" target="_blank" class="proj-link primary">Live Demo ↗</a>
+          <a href="https://github.com/sarfrazsaeed/shopnest" target="_blank" class="proj-link">GitHub</a>
         </div>
-        <div>
-            <button>
-                <a href="#projects" class="viewproject-btn">View Projects</a>
-            </button>
-            <button>
-                <a href="#contacts" class="getintouch-btn">Get in touch</a>
-            </button>
+      </div>
+      <div class="proj-arrow">↗</div>
+    </div>
+
+    <div class="proj">
+      <div class="proj-num">03</div>
+      <div class="proj-body">
+        <div class="proj-status live">Live · Deployed</div>
+        <div class="proj-title">SmartHire v3 — AI-Driven HR Job Matching</div>
+        <div class="proj-desc">Production HR platform with weighted candidate-to-job scoring (70% skills · 20% experience · 10% education), client-side PDF resume parsing, Chart.js dashboard analytics, and a pricing page with USD/PKR currency toggle. Ships with a 36-test Vitest suite and GitHub Actions CI/CD.</div>
+        <div class="proj-tech"><span class="proj-tag">React 18</span><span class="proj-tag">TypeScript</span><span class="proj-tag">Chart.js</span><span class="proj-tag">Framer Motion</span><span class="proj-tag">Vitest</span><span class="proj-tag">GitHub Actions</span></div>
+        <div class="proj-links">
+          <a href="https://sarfrazsaeed.github.io/smart-hr-job-matching/" target="_blank" class="proj-link primary">Live Demo ↗</a>
+          <a href="https://github.com/sarfrazsaeed/smart-hr-job-matching" target="_blank" class="proj-link">GitHub</a>
         </div>
-    </section>
+      </div>
+      <div class="proj-arrow">↗</div>
+    </div>
 
-    <!-- About Me -->
-    <section class="about" id="about">
-        <div class="section-label">Who I Am</div>
-        <div class="divider"></div>
-        <div class="about-content">
-            <h1>About Me</h1>
-            <p>
-                My name is <strong>Sarfraz Saeed</strong> and I am a
-                passionate developer from
-                <strong>Islamabad, Pakistan.</strong>
-            </p>
-            <p>
-                I am on a focused journey to become a
-                <strong>Django Full Stack Developer</strong>, currently
-                completing the Meta Full Stack Developer Specialization
-                on Coursera — covering JavaScript, React, Python, Django, and APIs.
-            </p>
-            <p>
-                I am a <strong>self-taught developer</strong> who believes
-                that consistency and determination matter more than any
-                circumstances. Every single day I push myself to learn
-                something new and build something real.
-            </p>
-            <p>
-                I am passionate about the intersection of
-                <strong>web development and artificial intelligence.</strong>
-                My goal is to build AI-powered Django web applications
-                that solve real-world problems in 2026 and beyond.
-            </p>
+    <div class="proj">
+      <div class="proj-num">04</div>
+      <div class="proj-body">
+        <div class="proj-status live">Live · Deployed</div>
+        <div class="proj-title">NovaSaaS — SaaS Marketing Landing Page</div>
+        <div class="proj-desc">Conversion-focused SaaS landing page with animated hero, features grid, tiered pricing with monthly/yearly toggle, testimonials, and validated contact form. Framer Motion orchestrates all scroll-triggered entrance animations.</div>
+        <div class="proj-tech"><span class="proj-tag">React 18</span><span class="proj-tag">TypeScript</span><span class="proj-tag">Framer Motion</span><span class="proj-tag">Tailwind CSS</span><span class="proj-tag">Vite</span></div>
+        <div class="proj-links">
+          <a href="https://github.com/sarfrazsaeed/novasaas-landing-page" target="_blank" class="proj-link primary">GitHub ↗</a>
         </div>
-    </section>
+      </div>
+      <div class="proj-arrow">↗</div>
+    </div>
 
-    <!-- Education section -->
-    <section class="education" id="education">
-        <h1 id="educationOne">Education</h1>
+    <div class="proj" style="opacity:0.55">
+      <div class="proj-num">05</div>
+      <div class="proj-body">
+        <div class="proj-status planned">In Progress — Phase 4</div>
+        <div class="proj-title">Django REST + React Full Stack App</div>
+        <div class="proj-desc">First full-stack project: Django REST Framework backend with PostgreSQL, JWT auth, and a React 18 / TypeScript frontend consuming the API.</div>
+        <div class="proj-tech"><span class="proj-tag">Python</span><span class="proj-tag">Django</span><span class="proj-tag">DRF</span><span class="proj-tag">PostgreSQL</span><span class="proj-tag">React 18</span><span class="proj-tag">TypeScript</span></div>
+      </div>
+      <div class="proj-arrow" style="opacity:0">↗</div>
+    </div>
 
-        <div class="education-degree">Meta Full Stack Developer Specialization</div>
-        <div class="education-school">Coursera — Taught by Meta Experts</div>
-        <div class="education-detail">
-            Currently in Progress — Course 1 Completed 
-        </div>
+  </div>
+</section>
 
-        <div class="education-degree">FSc Pre-Medical</div>
-        <div class="education-school">Prime Science Higher Secondary School, Multan</div>
-        <div class="education-detail">
-            Higher Secondary Certificate — Completed
-        </div>
+<!-- ROADMAP -->
+<section id="roadmap" class="section">
+  <span class="s-label">// roadmap</span>
+  <h2 class="s-title r">Learning Path</h2>
+  <div class="road-grid r">
+    <div class="road-item"><div class="road-phase">Phase 1</div><div class="road-title">Frontend Foundations</div><div class="road-sub">HTML5 · CSS3 · Bootstrap · Git</div><div class="road-desc">Semantic markup, responsive design, version control.</div><span class="road-badge done">Complete ✓</span></div>
+    <div class="road-item"><div class="road-phase">Phase 2</div><div class="road-title">JavaScript Mastery</div><div class="road-sub">ES6+ · DOM · Async · GitHub</div><div class="road-desc">ES6+, DOM manipulation, async patterns, branching workflows.</div><span class="road-badge done">Complete ✓</span></div>
+    <div class="road-item"><div class="road-phase">Phase 3</div><div class="road-title">Advanced Frontend</div><div class="road-sub">React 18 · TypeScript · GSAP · Zustand</div><div class="road-desc">4 production deployments. Animation engineering, state management, Vitest testing.</div><span class="road-badge done">Complete ✓</span></div>
+    <div class="road-item"><div class="road-phase">Phase 4</div><div class="road-title">Backend Foundations</div><div class="road-sub">Python · Django · SQL · DRF</div><div class="road-desc">Python OOP, SQL, Django, REST API design.</div><span class="road-badge wip">In Progress ⏳</span></div>
+    <div class="road-item"><div class="road-phase">Phase 5</div><div class="road-title">Full Stack</div><div class="road-sub">Django + React · JWT · PostgreSQL</div><div class="road-desc">Full stack apps, auth, cloud deployment.</div><span class="road-badge soon">Coming Soon</span></div>
+    <div class="road-item"><div class="road-phase">Phase 6</div><div class="road-title">AI Integration 🎯</div><div class="road-sub">LLM APIs · Django SaaS · Production</div><div class="road-desc">AI-powered web apps, LLM integration, freelancing at scale.</div><span class="road-badge soon">Final Goal</span></div>
+  </div>
+</section>
 
-        <div class="education-degree">Matric Science</div>
-        <div class="education-school">Prime Science Higher Secondary School, Multan</div>
-        <div class="education-detail">
-            Secondary School Certificate — Completed
-        </div>
+<!-- EDUCATION -->
+<section id="education" class="section section--dim">
+  <span class="s-label">// education</span>
+  <h2 class="s-title r">Background</h2>
+  <div class="edu-list r">
+    <div class="edu-item"><div class="edu-deg">B.Sc. Computer Science</div><div class="edu-school">Air University, Islamabad</div><div class="edu-detail">Undergraduate — Currently Enrolled</div><span class="edu-status s-wip">In Progress</span></div>
+    <div class="edu-item"><div class="edu-deg">Meta Full Stack Developer Specialization</div><div class="edu-school">Coursera — Authorized by Meta</div><div class="edu-detail">Course 1 Completed May 2026 · JavaScript, React, Python, Django</div><span class="edu-status s-wip">In Progress</span></div>
+    <div class="edu-item"><div class="edu-deg">FSc Pre-Medical</div><div class="edu-school">Prime Science H.S.S., Multan</div><div class="edu-detail">Higher Secondary Certificate</div><span class="edu-status s-done">Completed</span></div>
+    <div class="edu-item"><div class="edu-deg">Matric Science</div><div class="edu-school">Prime Science H.S.S., Multan</div><div class="edu-detail">Secondary School Certificate</div><span class="edu-status s-done">Completed</span></div>
+  </div>
+</section>
 
-    </section>
+<!-- CERTIFICATIONS -->
+<section id="certifications" class="section">
+  <span class="s-label">// certifications</span>
+  <h2 class="s-title r">Credentials</h2>
+  <div class="cert-card r">
+    <div class="cert-issuer">Meta · Coursera — May 2026</div>
+    <div class="cert-title">Introduction to Front-End Development</div>
+    <p class="cert-desc">Meta-authorized course covering semantic HTML5, CSS3, responsive design systems, Bootstrap 5, and modern frontend workflows.</p>
+    <div class="cert-tags">HTML5 · CSS3 · Bootstrap 5 · Responsive Design</div>
+    <a href="https://www.coursera.org/account/accomplishments/certificate/L2A0K7DI5ZHZ" target="_blank" class="cert-btn">View Certificate ↗</a>
+  </div>
+</section>
 
-    <!-- Skills -->
-    <section class="skills" id="skills">
-        <h1>SKILLS</h1>
-        <div class="skill-card-container">
-            <div class="skill-card">
-                <div class="currently skills"><strong>✅ Learned — Frontend:</strong></div>
-                <ul>
-                    <li>HTML5 & CSS3</li>
-                    <li>JavaScript ES6+</li>
-                    <li>React.js</li>
-                    <li>TypeScript</li>
-                    <li>Tailwind CSS</li>
-                    <li>Bootstrap 5</li>
-                    <li>Git & GitHub</li>
-                </ul>
-            </div>
-            
-            <div class="skill-card">
-                <div class="coming skills"><strong>⏳ Coming Soon — Backend:</strong></div>
-                <ul>
-                    <li>Python</li>
-                    <li>Django</li>
-                    <li>SQL & Databases</li>
-                    <li>REST APIs</li>
-                    <li>Django REST Framework</li>
-                </ul>
-            </div>
-            <div class="skill-card">
-                <div><strong>🎯 Future Goals:</strong></div>
-                <ul>
-                    <li>AI & LLM Integration</li>
-                    <li>TensorFlow / PyTorch</li>
-                    <li>JWT Authentication</li>
-                    <li>Cloud Deployment</li>
-                    <li>Docker & DevOps</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+<!-- CONTACT -->
+<section id="contact" class="section section--dim">
+  <span class="s-label">// contact</span>
+  <h2 class="s-title r">Let's Work Together</h2>
 
-    <!-- Roadmap -->
-    <section class="education" id="roadmap">
-        <h1 id="roadmapOne">My Learning Roadmap</h1>
+  <div class="contact-wrap">
+    <div class="r" id="cf-root"></div>
 
-        <div class="education-degree">Phase 1 — Frontend Foundations</div>
-        <div class="education-school">Completed</div>
-        <div class="education-detail">
-            HTML5, CSS3, Bootstrap 5, Responsive Design,
-            JavaScript basics, Git & GitHub, Version Control.
-        </div>
+    <div class="r">
+      <div class="ci-title">// find me</div>
+      <div class="ci-item"><div class="ci-ico">📍</div><div><span class="ci-lbl">Location</span><span class="ci-val">Islamabad, Pakistan 🇵🇰</span></div></div>
+      <div class="ci-item"><div class="ci-ico">✉️</div><div><span class="ci-lbl">Email</span><a href="mailto:sarfrazsaeed095@gmail.com" class="ci-val">sarfrazsaeed095@gmail.com</a></div></div>
+      <div class="ci-item"><div class="ci-ico">⬡</div><div><span class="ci-lbl">GitHub</span><a href="https://github.com/sarfrazsaeed" target="_blank" class="ci-val">github.com/sarfrazsaeed</a></div></div>
+      <div class="ci-item"><div class="ci-ico">💼</div><div><span class="ci-lbl">Fiverr</span><a href="https://www.fiverr.com/s/LdrlpXo" target="_blank" class="ci-val">fiverr.com (Available)</a></div></div>
+      <div class="ci-item"><div class="ci-ico">💼</div><div><span class="ci-lbl">Upwork</span><a href="https://www.upwork.com/freelancers/~010ac1b04029161d54" target="_blank" class="ci-val">upwork.com/sarfraz</a></div></div>
+      <div class="ci-item"><div class="ci-ico">🚀</div><div><span class="ci-lbl">Wellfound</span><a href="https://wellfound.com/u/sarfraz-saeed" target="_blank" class="ci-val">wellfound.com/u/sarfraz-saeed</a></div></div>
+      <div class="ci-item"><div class="ci-ico">🔗</div><div><span class="ci-lbl">Contra</span><a href="https://contra.com/sarfraz_saeed_cgu5m8w9" target="_blank" class="ci-val">contra.com/sarfraz_saeed</a></div></div>
+      <div class="ci-item"><div class="ci-ico">⏱</div><div><span class="ci-lbl">PeoplePerHour</span><a href="https://pph.me/sarfrazsaeed" target="_blank" class="ci-val">pph.me/sarfrazsaeed</a></div></div>
+    </div>
+  </div>
+</section>
 
-        <div class="education-degree">Phase 2 — JavaScript & Version Control</div>
-        <div class="education-school">Completed</div>
-        <div class="education-detail">
-            JavaScript ES6+, DOM Manipulation, Event Handling,
-            Async JS, Git branching & GitHub workflows.
-        </div>
+<!-- FOOTER -->
+<footer>
+  <div class="f-left"><span>Sarfraz Saeed</span> · React 18 · TypeScript · Vite · GSAP · Framer Motion · Pakistan 🇵🇰</div>
+  <div class="f-links">
+    <a href="https://github.com/sarfrazsaeed" target="_blank" class="f-link">GitHub</a>
+    <a href="https://www.fiverr.com/s/LdrlpXo" target="_blank" class="f-link">Fiverr</a>
+    <a href="mailto:sarfrazsaeed095@gmail.com" class="f-link">Email</a>
+  </div>
+</footer>
 
-        <div class="education-degree">Phase 3 — React & Modern Frontend</div>
-        <div class="education-school">Completed</div>
-        <div class="education-detail">
-            React.js, TypeScript, Tailwind CSS, Component architecture,
-            State management, Props, Hooks, Responsive UI.
-        </div>
+<!-- React CDN -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-        <div class="education-degree">Phase 4 ⏳ — Python & Databases</div>
-        <div class="education-school">In Progress</div>
-        <div class="education-detail">
-            Python programming, OOP concepts, SQL, MySQL,
-            Relational Databases, Back-End Integration.
-        </div>
+<!-- Inline React Contact Form -->
+<script>
+(function(){
+  const { useState } = React;
 
-        <div class="education-degree">Phase 5 ⏳ — Django Full Stack</div>
-        <div class="education-school">Coming Soon</div>
-        <div class="education-detail">
-            Django Framework, Models, Views, Templates,
-            Django REST Framework, APIs, Authentication.
-        </div>
+  function ContactForm() {
+    const [d, setD] = useState({ name:'', email:'', subject:'', message:'' });
+    const [errs, setErrs] = useState({});
+    const [ok, setOk] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-        <div class="education-degree">Phase 6 🎯 — AI Integration</div>
-        <div class="education-school">Final Goal</div>
-        <div class="education-detail">
-            Integrating AI/LLM APIs with Django,
-            Building AI-powered web applications,
-            Deploying to production, Freelancing on Fiverr & Upwork.
-        </div>
+    function validate(v) {
+      const e = {};
+      if (!v.name.trim() || v.name.trim().length < 2) e.name = 'At least 2 characters';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = 'Valid email required';
+      if (!v.subject.trim() || v.subject.trim().length < 3) e.subject = 'At least 3 characters';
+      if (!v.message.trim() || v.message.trim().length < 20) e.message = 'At least 20 characters';
+      return e;
+    }
 
-    </section>
+    function change(e) {
+      const { name, value } = e.target;
+      setD(p => ({...p, [name]: value}));
+      if (errs[name]) setErrs(p => ({...p, [name]: ''}));
+    }
 
-    <!-- Projects -->
-    <section class="projects" id="projects">
-        <h1>PROJECTS</h1>
+    function submit(e) {
+      e.preventDefault();
+      const v = validate(d);
+      if (Object.keys(v).length) { setErrs(v); return; }
+      setLoading(true);
+      setTimeout(() => { setLoading(false); setOk(true); setD({name:'',email:'',subject:'',message:''}); setErrs({}); }, 1400);
+    }
 
-        <div><strong class="badge-done">Project 1 — Completed ✓</strong><br>
-            <b>SmartHire — HR Job Matching System</b></div>
-        <p>A web-based HR management tool with candidate registration, job posting,
-            and skill-based matching with percentage scores. Features data visualization
-            charts, TypeScript type safety, and a fully responsive Tailwind UI.
-            Deployed live on GitHub Pages.
-            <strong>Technologies: HTML5, CSS3, JavaScript ES6+, TypeScript, React 18, Tailwind CSS, Bootstrap 5, Chart.js, ESLint + Prettier, GitHub Pages</strong></p>
+    if (ok) return React.createElement('div', { className: 'cf-ok' },
+      React.createElement('div', { className: 'cf-ok-ico' }, '✓'),
+      React.createElement('h3', null, 'Message Sent'),
+      React.createElement('p', null, "Thanks for reaching out — I'll get back to you shortly."),
+      React.createElement('button', { onClick: () => setOk(false) }, 'Send another')
+    );
 
-            <div><strong class="badge-done">Project 2 — Completed ✓</strong><br>
-                <b>Personal Portfolio Website</b></div>
-            <p>A professional dark-theme portfolio website with scroll progress bar,
-                typing animation, scroll-reveal effects, active nav highlighting,
-                mobile hamburger menu, and a React-powered validated contact form.
-                Fully responsive single-page layout. Deployed live on GitHub Pages.
-                <strong>Technologies: HTML5, CSS3, JavaScript ES6+, React.js, GitHub Pages</strong></p>
+    const field = (key, label, type, ph, ta) => React.createElement('div', { className: 'cf-field' },
+      React.createElement('label', { className: 'cf-label' }, label),
+      React.createElement(ta ? 'textarea' : 'input', {
+        className: `cf-input${ta ? ' cf-ta' : ''}${errs[key] ? ' err' : ''}`,
+        type, name: key, placeholder: ph, value: d[key], onChange: change, rows: ta ? 5 : undefined
+      }),
+      errs[key] && React.createElement('div', { className: 'cf-error' }, errs[key])
+    );
 
-            <div><strong class="badge-planned">Project 3 — Completed ✓</strong><br>
-                <b>SaaS Landing Page — React + Tailwind</b></div>
-            <p>A fully responsive, pixel-perfect multi-section SaaS product landing page
-                with animated hero, features grid, pricing table, testimonials, and
-                contact form. Smooth scroll animations and mobile-first design.
-                Deployed live on GitHub Pages.
-                <b>Technologies: React.js, TypeScript, Tailwind CSS, Framer Motion</b></p>
+    return React.createElement('div', null,
+      React.createElement('h3', { className: 'cf-title' }, 'Send a Message'),
+      field('name', 'Name', 'text', 'Your name'),
+      field('email', 'Email', 'email', 'your@email.com'),
+      field('subject', 'Subject', 'text', 'Project inquiry'),
+      field('message', 'Message', 'text', 'Tell me about your project...', true),
+      React.createElement('button', { className: 'cf-submit', onClick: submit, disabled: loading }, loading ? 'Sending…' : 'Send Message →')
+    );
+  }
 
-        <div><strong class="badge-planned">Project 4 — Planned Month 4</strong><br>
-            <b>Python Django Blog</b></div>
-        <p>A full featured blog application built with Django — user authentication,
-            CRUD operations, database integration and admin panel.
-            <b>Technologies: Python, Django, SQLite, Bootstrap</b></p>
+  const root = document.getElementById('cf-root');
+  if (root) ReactDOM.createRoot(root).render(React.createElement(ContactForm));
+})();
+</script>
 
-        <div><strong class="badge-planned">Project 5 — Planned Month 5</strong><br>
-            <b>Django E-Commerce Platform</b></div>
-        <p>A full stack e-commerce application with Django backend, product management,
-            user authentication and MySQL database.
-            <b>Technologies: Python, Django, MySQL, Bootstrap 5</b></p>
+<!-- GSAP -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
 
-        <div><strong class="badge-planned">Project 6 — Planned Month 6 🎯</strong><br>
-            <b>AI-Powered Django SaaS Tool</b></div>
-        <p>An AI-powered web application built with Django — integrating LLM APIs
-            to build a smart tool such as AI resume optimizer or content generator.
-            Deployed live.
-            <b>Technologies: Python, Django, AI/LLM API, REST Framework, Deployment</b></p>
+/* cursor */
+const cur = document.getElementById('cur');
+const curR = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+window.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; gsap.to(cur,{x:mx,y:my,duration:0.08}); });
+(function tick(){ rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1; gsap.set(curR,{x:rx,y:ry}); requestAnimationFrame(tick); })();
 
-    </section>
+/* progress */
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => { bar.style.width = (window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100)+'%'; });
 
-    <!-- Certifications -->
-    <section class="certifications" id="certifications">
-        <h1>CERTIFICATIONS</h1>
-        <div class="certificate-card">
-            <div class="certificate-badge">Meta Professional Certificate</div>
-            <h2>Introduction to Front-End Development</h2>
-            <p>
-                Successfully completed the Introduction to Front-End Development
-                course authorized by Meta on Coursera — May 19, 2026.
-                Learned HTML5, CSS3, responsive design, Bootstrap 5,
-                UI Frameworks and modern frontend web development concepts.
-            </p>
-            <div class="certificate-tech">
-                HTML5 • CSS3 • Bootstrap 5 • Responsive Design • UI Frameworks
-            </div>
-            <a href="https://www.coursera.org/account/accomplishments/certificate/L2A0K7DI5ZHZ"
-               target="_blank" class="certificate-btn">
-                View Certificate
-            </a>
-        </div>
-    </section>
+/* nav */
+const nav = document.getElementById('nav');
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+cur));
+});
 
-    <!-- Contacts -->
-    <section class="contacts" id="contacts">
-        <h1>Contacts</h1>
-        <div class="contacts-grid">
-        <div id="contact-form-root"></div>
-        <div>
-            <b>Location:</b> Islamabad, Pakistan<br>
-            <b>Email:</b> <a href="mailto:sarfrazsaeed095@gmail.com">sarfrazsaeed095@gmail.com</a><br>
-            <b>Freelance:</b> <a href="https://www.fiverr.com/s/LdrlpXo" target="_blank">Available on Fiverr</a><br>
-            <b>GitHub:</b> <a href="https://github.com/sarfrazsaeed" target="_blank">github.com/sarfrazsaeed</a><br>
-            <b>Portfolio:</b> <a href="https://sarfrazsaeed.github.io/portfolio" target="_blank">sarfrazsaeed.github.io/portfolio</a><br>
-            <b>Wellfound:</b> <a href="https://wellfound.com/u/sarfraz-saeed" target="_blank">wellfound.com/u/sarfraz-saeed</a><br>
-            <b>Contra:</b> <a href="https://contra.com/sarfraz_saeed_cgu5m8w9" target="_blank">contra.com/sarfraz_saeed_cgu5m8w9</a><br>
-            <b>Upwork:</b> <a href="https://www.upwork.com/freelancers/~010ac1b04029161d54?mp_source=share" target="_blank">/www.upwork.com</a><br>
-            <b>People Per Hour:</b> <a href="https://pph.me/sarfrazsaeed" target="_blank">pph.me/sarfrazsaeed</a>
-        </div>
-        </div>
-    </section>
+/* hamburger */
+const hb = document.getElementById('hamburger');
+const nl = document.getElementById('nav-links');
+hb.addEventListener('click', () => { hb.classList.toggle('open'); nl.classList.toggle('open'); });
+navLinks.forEach(a => a.addEventListener('click', () => { hb.classList.remove('open'); nl.classList.remove('open'); }));
 
-    <footer>
-        <span style="color: var(--gold);">Sarfraz Saeed</span> &nbsp;·&nbsp; 
-        Built with HTML · CSS · JavaScript · React · TypeScript · Tailwind &nbsp;·&nbsp; 
-        Django Full Stack &amp; AI Developer &nbsp;·&nbsp; 
-        Islamabad, Pakistan 🇵🇰
-      </footer>
-    <script src="script.js"></script>
-    <script src="ContactForm.js"></script>
+/* HERO entrance */
+const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+tl.to('.hero-tag', { opacity: 1, duration: 0.6, delay: 0.2 })
+  .to('.hero-h1 .line span', { opacity: 1, y: 0, duration: 0.9, stagger: 0.15 }, '-=0.2')
+  .to('.hero-sub', { opacity: 1, y: 0, duration: 0.7 }, '-=0.5')
+  .to('.hero-actions', { opacity: 1, y: 0, duration: 0.6 }, '-=0.4')
+  .to('.hero-stats', { opacity: 1, duration: 0.6 }, '-=0.3');
+
+/* reveal all .r */
+gsap.utils.toArray('.r').forEach((el, i) => {
+  gsap.to(el, {
+    opacity: 1, y: 0, duration: 0.75, ease: 'power3.out',
+    delay: (i % 3) * 0.06,
+    scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+  });
+});
+
+/* projects stagger */
+ScrollTrigger.create({
+  trigger: '.proj-list', start: 'top 80%',
+  onEnter: () => gsap.from('.proj', { opacity: 0, y: 30, duration: 0.6, stagger: 0.1, ease: 'power3.out', clearProps: 'all' }),
+  once: true
+});
+
+/* skills stagger */
+ScrollTrigger.create({
+  trigger: '.skills-grid', start: 'top 80%',
+  onEnter: () => gsap.from('.sk-cell', { opacity: 0, y: 24, duration: 0.55, stagger: 0.07, ease: 'power3.out', clearProps: 'all' }),
+  once: true
+});
+
+/* road stagger */
+ScrollTrigger.create({
+  trigger: '.road-grid', start: 'top 80%',
+  onEnter: () => gsap.from('.road-item', { opacity: 0, y: 24, duration: 0.55, stagger: 0.07, ease: 'power3.out', clearProps: 'all' }),
+  once: true
+});
+
+/* subtle parallax on hero bg */
+gsap.to('.hero-bg', {
+  yPercent: 30, ease: 'none',
+  scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: 1.5 }
+});
+</script>
+
 </body>
 </html>
