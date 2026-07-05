@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx playwright *)",
+      "Bash(find /Users/apple -name \"playwright\" -maxdepth 6 -type d 2>/dev/null | head -5 *)",
+      "Read(//Users/apple/**)",
+      "Read(//usr/local/**)",
+      "Read(//Applications/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('version:', d.get\\('version'\\)\\); print\\('main:', d.get\\('main'\\)\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(node screenshot.mjs)",
+      "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
+      "Bash(npm ls *)",
+      "Bash(ls ~/Library/Caches/ms-playwright/ 2>&1)",
+      "Read(//Users/apple/Library/Caches/ms-playwright/**)",
+      "Bash(npm install *)",
+      "Bash(node pdf2png.js deloitte.pdf deloitte_full.png)",
+      "Bash(node pdf2png.js skyscanner.pdf skyscanner_full.png)"
+    ]
+  }
+}

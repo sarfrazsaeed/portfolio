@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sarfraz Saeed — Frontend Developer</title>
   <meta name="description" content="Frontend Developer building production React 18 apps with TypeScript, GSAP, and Framer Motion. CS @ Air University Islamabad." />
+  <!-- Open Graph / social preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Sarfraz Saeed — Portfolio" />
+  <meta property="og:title" content="Sarfraz Saeed — Frontend Developer" />
+  <meta property="og:description" content="Frontend Developer building production React 18 apps with TypeScript, GSAP, and Framer Motion. CS @ Air University Islamabad." />
+  <meta property="og:url" content="https://sarfrazsaeed.github.io/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Sarfraz Saeed — Frontend Developer" />
+  <meta name="twitter:description" content="Frontend Developer building production React 18 apps with TypeScript, GSAP, and Framer Motion." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -334,11 +343,17 @@
     .cert-card {
       max-width: 680px; border: 1px solid var(--rule); border-radius: 4px; padding: 2.5rem;
       background: var(--ink-2); position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
       transition: border-color 0.3s var(--ease-out), transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
       box-shadow: 0 4px 40px rgba(0,0,0,0.4), 0 1px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03);
     }
+    .cert-card .cert-badge { margin-top: auto; }
     .cert-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: linear-gradient(180deg, var(--accent), var(--gold)); }
     .cert-card:hover { border-color: rgba(255,77,0,0.3); transform: translateX(4px); box-shadow: 0 8px 56px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,77,0,0.2), 0 2px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05); }
+    a.cert-card { text-decoration: none; color: inherit; cursor: pointer; }
+    .cert-thumb { display: block; width: 100%; border-radius: 3px; overflow: hidden; margin-bottom: 1.25rem; border: 1px solid var(--rule); background: #fff; }
+    .cert-thumb img { display: block; width: 100%; height: auto; transition: transform 0.4s var(--ease-out); }
+    a.cert-card:hover .cert-thumb img { transform: scale(1.03); }
     .cert-issuer { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
     .cert-title { font-family: var(--serif); font-size: clamp(1.3rem, 2.5vw, 1.65rem); font-weight: 400; color: var(--text); margin-bottom: 0.75rem; line-height: 1.15; letter-spacing: -0.02em; }
     .cert-desc { font-size: 0.88rem; color: var(--body); line-height: 1.75; margin-bottom: 0.75rem; }
@@ -537,6 +552,7 @@
     @media (min-width: 769px) and (max-width: 1024px) {
       .proj-list--horizontal .proj { width: min(320px, 45vw); }
       .about-wrap-v2 { grid-template-columns: 160px 1fr; gap: 2.5rem; }
+      .nav-links { gap: 1.25rem; }
     }
     /* 1440px — large desktop */
     @media (min-width: 1440px) {
@@ -593,6 +609,16 @@
     .cert-badge-lbl { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.2rem; }
     .cert-badge-link { font-family: var(--mono); font-size: 0.72rem; color: var(--body); transition: color 0.25s var(--ease-out); }
     .cert-badge-link:hover { color: var(--accent); }
+    .cert-badge-code { font-family: var(--mono); font-size: 0.72rem; color: var(--body); }
+
+    /* completed-but-unverified variant (no public verify link) */
+    .cert-badge--plain { background: rgba(196,146,42,0.06); border-color: rgba(196,146,42,0.22); }
+    .cert-badge--plain .cert-badge-check { background: rgba(196,146,42,0.12); border-color: rgba(196,146,42,0.28); color: var(--gold); }
+    .cert-badge--plain .cert-badge-lbl { color: var(--gold); }
+
+    /* ── CERT GRID (multiple credential cards) ── */
+    .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; max-width: 1180px; position: relative; z-index: 1; }
+    .cert-grid .cert-card { max-width: none; }
 
     /* ── SECTION DIVIDERS ── */
     .section::after {
@@ -742,6 +768,7 @@
     <li><a href="#skills">Skills</a></li>
     <li><a href="#projects">Work</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#certifications">Credentials</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <button id="theme-toggle" class="theme-toggle" title="Switch to gold accent" aria-label="Toggle accent color"><span class="theme-toggle-dot"></span><span class="theme-toggle-label">Theme</span></button>
@@ -769,6 +796,7 @@
 
     <div class="hero-actions">
       <a href="#projects" class="btn-fill magnetic">View Work ↓</a>
+      <a href="resume.pdf" download class="btn-ghost magnetic">Download Resume ↓</a>
       <a href="#contact" class="btn-ghost magnetic">Get in Touch</a>
       <a href="https://github.com/sarfrazsaeed" target="_blank" class="btn-ghost">GitHub ↗</a>
     </div>
@@ -865,7 +893,7 @@
     <div class="sk-cell"><div class="sk-head"><span class="sk-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></span><span class="sk-name">Animation</span></div><div class="sk-tags"><span class="sk-tag">GSAP 3</span><span class="sk-tag">ScrollTrigger</span><span class="sk-tag">Framer Motion</span><span class="sk-tag">CSS Animations</span></div></div>
     <div class="sk-cell"><div class="sk-head"><span class="sk-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span><span class="sk-name">State &amp; Data</span></div><div class="sk-tags"><span class="sk-tag">Zustand</span><span class="sk-tag">React Hooks</span><span class="sk-tag">Context API</span><span class="sk-tag">Chart.js</span><span class="sk-tag">LocalStorage</span></div></div>
     <div class="sk-cell"><div class="sk-head"><span class="sk-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span><span class="sk-name">Tooling &amp; QA</span></div><div class="sk-tags"><span class="sk-tag">Git &amp; GitHub</span><span class="sk-tag">Vitest</span><span class="sk-tag">ESLint</span><span class="sk-tag">GitHub Actions</span><span class="sk-tag">npm</span></div></div>
-    <div class="sk-cell"><div class="sk-head"><span class="sk-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span class="sk-name">Learning Now</span></div><div class="sk-tags"><span class="sk-tag">Python</span><span class="sk-tag">Django</span><span class="sk-tag">DRF</span><span class="sk-tag">REST APIs</span><span class="sk-tag">PostgreSQL</span></div></div>
+    <div class="sk-cell"><div class="sk-head"><span class="sk-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span class="sk-name">Learning Now</span></div><div class="sk-tags"><span class="sk-tag">Python</span><span class="sk-tag">Django</span><span class="sk-tag">DRF</span><span class="sk-tag">REST APIs</span><span class="sk-tag">PostgreSQL</span><span class="sk-tag">JWT</span></div></div>
   </div>
 </section>
 
@@ -994,18 +1022,68 @@
 <section id="certifications" class="section">
   <span class="s-label">// certifications</span>
   <h2 class="s-title">Credentials</h2>
-  <div class="cert-card r">
-    <div class="cert-issuer">Meta · Coursera — May 2026</div>
-    <div class="cert-title">Introduction to Front-End Development</div>
-    <p class="cert-desc">Meta-authorized course covering semantic HTML5, CSS3, responsive design systems, Bootstrap 5, and modern frontend workflows.</p>
-    <div class="cert-tags">HTML5 · CSS3 · Bootstrap 5 · Responsive Design</div>
-    <div class="cert-badge">
-      <div class="cert-badge-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div>
-        <span class="cert-badge-lbl">Verified on Coursera</span>
-        <a href="https://coursera.org/verify/L2A0K7DI5ZHZ" target="_blank" class="cert-badge-link">coursera.org/verify/L2A0K7DI5ZHZ ↗</a>
+  <div class="cert-grid">
+
+    <div class="cert-card r">
+      <div class="cert-thumb"><img src="cert-micro1.png" alt="micro1 AI Interview certification badge preview" loading="lazy" width="640" height="452" /></div>
+      <div class="cert-issuer">micro1 — Jul 2026</div>
+      <div class="cert-title">React / JavaScript / ES6+ Certification</div>
+      <p class="cert-desc">Technical assessment validating hands-on proficiency in React fundamentals, modern JavaScript, and ES6+ syntax — component patterns, hooks, and async logic.</p>
+      <div class="cert-tags">React · JavaScript · ES6+</div>
+      <div class="cert-badge cert-badge--plain">
+        <div class="cert-badge-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <span class="cert-badge-lbl">Completed</span>
+          <span class="cert-badge-code">July 4, 2026</span>
+        </div>
       </div>
     </div>
+
+    <a class="cert-card r" href="https://www.theforage.com/completion-certificates/9PBTqmSxAf6zZTseP/udmxiyHeqYQLkTPvf_9PBTqmSxAf6zZTseP_6a4167a0806a16122e52949c_1783100224593_completion_certificate.pdf" target="_blank" rel="noopener">
+      <div class="cert-thumb"><img src="cert-deloitte.png" alt="Deloitte Technology Job Simulation certificate preview" loading="lazy" width="640" height="296" /></div>
+      <div class="cert-issuer">Deloitte Australia · via Forage — Jul 2026</div>
+      <div class="cert-title">Technology Job Simulation</div>
+      <p class="cert-desc">Simulated a Deloitte technology consulting engagement — gathering client requirements, proposing a coded solution, and presenting technical recommendations.</p>
+      <div class="cert-tags">Consulting · Technical Proposals · Client Requirements</div>
+      <div class="cert-badge">
+        <div class="cert-badge-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <span class="cert-badge-lbl">Completed July 3, 2026</span>
+          <span class="cert-badge-link">View Certificate ↗</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="cert-card r" href="https://www.theforage.com/completion-certificates/skoQmxqhtgWmKv2pm/km4rw7dihDr3etqom_skoQmxqhtgWmKv2pm_6a4167a0806a16122e52949c_1782919302683_completion_certificate.pdf" target="_blank" rel="noopener">
+      <div class="cert-thumb"><img src="cert-skyscanner.png" alt="Skyscanner Front-End Software Engineering Simulation certificate preview" loading="lazy" width="640" height="296" /></div>
+      <div class="cert-issuer">Skyscanner · via Forage — Jul 2026</div>
+      <div class="cert-title">Front-End Software Engineering Simulation</div>
+      <p class="cert-desc">Completed simulated Skyscanner front-end engineering tasks — building UI components, debugging, and writing production-style front-end code.</p>
+      <div class="cert-tags">JavaScript · Debugging · UI Components</div>
+      <div class="cert-badge">
+        <div class="cert-badge-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <span class="cert-badge-lbl">Completed July 1, 2026</span>
+          <span class="cert-badge-link">View Certificate ↗</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="cert-card r" href="https://coursera.org/verify/L2A0K7DI5ZHZ" target="_blank" rel="noopener">
+      <div class="cert-thumb"><img src="cert-meta.png" alt="Meta Introduction to Front-End Development certificate preview" loading="lazy" width="640" height="335" /></div>
+      <div class="cert-issuer">Meta · Coursera — May 2026</div>
+      <div class="cert-title">Introduction to Front-End Development</div>
+      <p class="cert-desc">Meta-authorized course covering semantic HTML5, CSS3, responsive design systems, Bootstrap 5, and modern frontend workflows.</p>
+      <div class="cert-tags">HTML5 · CSS3 · Bootstrap 5 · Responsive Design</div>
+      <div class="cert-badge">
+        <div class="cert-badge-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <span class="cert-badge-lbl">Verified on Coursera</span>
+          <span class="cert-badge-link">coursera.org/verify/L2A0K7DI5ZHZ ↗</span>
+        </div>
+      </div>
+    </a>
+
   </div>
 </section>
 
