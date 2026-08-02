@@ -2,7 +2,7 @@
 
 > Personal portfolio built with HTML · CSS · GSAP · React 18 · GitHub Pages
 
-[![Live Site](https://img.shields.io/badge/🌐_Live_Site-Portfolio-FF4D00?style=for-the-badge)](https://sarfrazsaeed.github.io/portfolio)
+[![Live Site](https://img.shields.io/badge/Live_Site-Portfolio-FF4D00?style=for-the-badge)](https://sarfrazsaeed.github.io/portfolio)
 
 ---
 
@@ -14,13 +14,14 @@ HTML5 · CSS3 · GSAP 3 + ScrollTrigger · React 18 (CDN) · GitHub Pages
 
 ## Highlights
 
-- Editorial dark design — DM Serif Display + DM Sans + DM Mono
-- GSAP hero entrance animation + ScrollTrigger scroll reveals
-- Custom animated cursor with ring follow effect
-- Scroll progress bar
+- Editorial dark design — Fraunces display, Space Grotesk body, IBM Plex Mono accents
+- GSAP master timeline for page-load hero choreography (nav, headline, stats, media)
+- Character-by-character hero headline reveal
+- Infinite scrolling tech-stack marquee, pauses on hover
+- Scroll progress bar and scroll-triggered project reveals
 - React 18 contact form with live validation (inlined, no build step)
 - Mobile-first responsive with hamburger menu
-- Showcases 4 live projects — FoodieX, ShopNest, SmartHire, NovaSaaS
+- Showcases 4 live projects — FoodieX, ShopNest, SmartHire v3, NovaSaaS
 
 ---
 
@@ -31,7 +32,7 @@ HTML5 · CSS3 · GSAP 3 + ScrollTrigger · React 18 (CDN) · GitHub Pages
 | [FoodieX](https://sarfrazsaeed.github.io/foodiex/) | React 18 · TypeScript · GSAP · Zustand | Live |
 | [ShopNest](https://sarfrazsaeed.github.io/shopnest/) | React 18 · TypeScript · GSAP · Zustand | Live |
 | [SmartHire v3](https://sarfrazsaeed.github.io/smart-hr-job-matching/) | React 18 · TypeScript · Chart.js · Vitest | Live |
-| NovaSaaS | React 18 · TypeScript · Framer Motion | Live |
+| [NovaSaaS](https://sarfrazsaeed.github.io/novasaas-landing-page/) | React 18 · TypeScript · Framer Motion | Live |
 
 ---
 
