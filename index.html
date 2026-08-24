@@ -115,6 +115,20 @@
       mask-image: radial-gradient(ellipse 100% 100% at 50% 0%, black 40%, transparent 100%);
     }
 
+    /* Fullscreen shader hero: layered on top of .hero-bg in the DOM, so it
+       paints over the static gradient once JS confirms it can run. If WebGL
+       is unavailable or the visitor prefers reduced motion, this canvas is
+       simply never shown and .hero-bg's static/animated gradient (above)
+       stands in as the fallback — same visual family, zero motion cost. */
+    .hero-shader-canvas {
+      position: absolute; inset: 0; z-index: 0;
+      width: 100%; height: 100%;
+      display: none; /* JS flips this to block only after a successful WebGL init */
+      opacity: 0;
+      transition: opacity 1.1s var(--ease-out);
+    }
+    .hero-shader-canvas.is-ready { display: block; opacity: 1; }
+
     .hero-shell {
       position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
       gap: clamp(1.5rem, 3vw, 3rem); align-items: center; width: 100%; max-width: 1360px; margin: 0 auto;
@@ -847,6 +861,7 @@
 <!-- HERO -->
 <section id="home">
   <div class="hero-bg"></div>
+  <canvas id="hero-shader-canvas" class="hero-shader-canvas" aria-hidden="true"></canvas>
   <div class="hero-shell">
     <div class="hero-inner hero-copy">
       <div class="hero-tag">Available for selected freelance work</div>
@@ -1580,6 +1595,225 @@ ScrollTrigger.create({
       });
     });
   });
+})();
+
+/* ── SIGNATURE HERO SHADER ──
+   A fullscreen fragment shader replacing the static hero gradient.
+   Design: keep the same two-color-region idea the CSS gradient already
+   used (cool accent blue upper-right, warm gold lower-left) but make it a
+   living, hand-drifting aurora instead of a fixed radial gradient — and
+   let the cursor gently pull the flow toward it, so the hero reacts to
+   the one thing every visitor does immediately: move the mouse.
+
+   Responsible-by-default: devicePixelRatio is capped, the render loop
+   pauses when the tab isn't visible, and prefers-reduced-motion skips
+   this entirely — the static .hero-bg gradient underneath is the
+   fallback in both of those cases. */
+(function () {
+  const canvas = document.getElementById('hero-shader-canvas');
+  const heroSection = document.getElementById('home');
+  if (!canvas || !heroSection) return;
+
+  // Reduced motion: never touch WebGL, let the static CSS gradient show.
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReducedMotion) return;
+
+  const gl = canvas.getContext('webgl', { antialias: true, alpha: false })
+    || canvas.getContext('experimental-webgl', { antialias: true, alpha: false });
+  if (!gl) return; // no WebGL: static gradient fallback stands as-is
+
+  // Fullscreen triangle: 3 vertices that cover the whole clip space, no
+  // quad/index buffer needed — cheaper than the usual 2-triangle rect.
+  const VERTEX_SRC = `
+    attribute vec2 a_pos;
+    void main() {
+      gl_Position = vec4(a_pos, 0.0, 1.0);
+    }
+  `;
+
+  const FRAGMENT_SRC = `
+    precision highp float;
+    uniform vec2  u_resolution; // canvas size in CSS pixels (pre-DPR)
+    uniform float u_time;       // seconds since start
+    uniform vec2  u_mouse;      // normalized 0..1 cursor position, smoothed
+
+    // --- classic 2D simplex noise (Ashima Arts, public domain) ---
+    // This block is a standard implementation; everything below it is mine.
+    vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec2 mod289(vec2 x){return x-floor(x*(1.0/289.0))*289.0;}
+    vec3 permute(vec3 x){return mod289(((x*34.0)+1.0)*x);}
+    float snoise(vec2 v){
+      const vec4 C=vec4(0.211324865405187,0.366025403784439,-0.577350269189626,0.024390243902439);
+      vec2 i=floor(v+dot(v,C.yy));
+      vec2 x0=v-i+dot(i,C.xx);
+      vec2 i1=(x0.x>x0.y)?vec2(1.0,0.0):vec2(0.0,1.0);
+      vec4 x12=x0.xyxy+C.xxzz;
+      x12.xy-=i1;
+      i=mod289(i);
+      vec3 p=permute(permute(i.y+vec3(0.0,i1.y,1.0))+i.x+vec3(0.0,i1.x,1.0));
+      vec3 m=max(0.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.0);
+      m=m*m; m=m*m;
+      vec3 x=2.0*fract(p*C.www)-1.0;
+      vec3 h=abs(x)-0.5;
+      vec3 ox=floor(x+0.5);
+      vec3 a0=x-ox;
+      m*=1.79284291400159-0.85373472095314*(a0*a0+h*h);
+      vec3 g;
+      g.x=a0.x*x0.x+h.x*x0.y;
+      g.yz=a0.yz*x12.xz+h.yz*x12.yw;
+      return 130.0*dot(m,g);
+    }
+
+    // Fractal Brownian motion: stack a few octaves of the noise above so
+    // the flow has both broad slow shapes and finer moving detail.
+    float fbm(vec2 p){
+      float total = 0.0;
+      float amp = 0.5;
+      for (int i = 0; i < 5; i++) {
+        total += amp * snoise(p);
+        p *= 2.02;   // each octave doubles frequency
+        amp *= 0.55; // and loses roughly half its weight
+      }
+      return total;
+    }
+
+    void main() {
+      vec2 uv = gl_FragCoord.xy / u_resolution.xy;   // 0..1 across the canvas
+      float aspect = u_resolution.x / u_resolution.y;
+      vec2 p = vec2(uv.x * aspect, uv.y);            // undistort for non-square canvas
+
+      // Cursor pulls the sampling coordinate slightly toward it — this is
+      // the "flow gently leans toward the cursor" interaction. Weak pull
+      // (0.35) so it reads as alive, not gimmicky, and the field still
+      // drifts on its own with no mouse movement at all.
+      vec2 mouseP = vec2(u_mouse.x * aspect, u_mouse.y);
+      vec2 toMouse = mouseP - p;
+      p += toMouse * 0.12 * smoothstep(0.9, 0.0, length(toMouse));
+
+      // Slow domain warp: feed fbm's own output back into itself, offset
+      // by time, so the flow folds over itself instead of just sliding.
+      float t = u_time * 0.045;
+      vec2 warp = vec2(fbm(p * 1.6 + t), fbm(p * 1.6 - t));
+      float n = fbm(p * 1.1 + warp * 0.8 + t * 0.5);   // -1..1 roughly
+
+      // Palette pulled directly from the site's own CSS variables:
+      // ink (base), accent blue, gold, and a soft teal as a mid tone —
+      // so the hero reads as part of this design system, not a stock demo.
+      vec3 ink   = vec3(0.020, 0.043, 0.078);  // --ink
+      vec3 blue  = vec3(0.357, 0.490, 1.000);  // --accent
+      vec3 gold  = vec3(0.851, 0.635, 0.298);  // --accent-2 / --gold
+      vec3 teal  = vec3(0.486, 0.749, 0.686);  // --teal
+
+      float band = smoothstep(-0.6, 0.9, n);
+      vec3 color = mix(ink, mix(teal, blue, uv.x), band * 0.55);
+      color = mix(color, gold, smoothstep(0.55, 1.0, n) * (1.0 - uv.x) * 0.5);
+
+      // Keep the left/bottom quadrant darker — that's where the headline
+      // and body copy sit — and let the brightest color show upper-right,
+      // mirroring where the original static gradient placed its glow.
+      float readability = smoothstep(0.0, 1.0, uv.x * 0.6 + uv.y * 0.4);
+      color = mix(color * 0.55, color, readability);
+
+      // Soft vignette so the canvas edges settle back into --ink and blend
+      // with the rest of the page instead of hard-cutting at the section edge.
+      float vign = smoothstep(0.95, 0.35, length(uv - 0.5));
+      color = mix(ink, color, vign);
+
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `;
+
+  function compile(type, src) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, src);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.warn('Hero shader compile error:', gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    return shader;
+  }
+
+  const vs = compile(gl.VERTEX_SHADER, VERTEX_SRC);
+  const fs = compile(gl.FRAGMENT_SHADER, FRAGMENT_SRC);
+  if (!vs || !fs) return;
+
+  const program = gl.createProgram();
+  gl.attachShader(program, vs);
+  gl.attachShader(program, fs);
+  gl.linkProgram(program);
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.warn('Hero shader link error:', gl.getProgramInfoLog(program));
+    return;
+  }
+  gl.useProgram(program);
+
+  const posBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+  // One big triangle that overshoots the clip box on two corners — the
+  // GPU clips it to the viewport for free, so no quad/index buffer needed.
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+  const posLoc = gl.getAttribLocation(program, 'a_pos');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  const u_resolution = gl.getUniformLocation(program, 'u_resolution');
+  const u_time = gl.getUniformLocation(program, 'u_time');
+  const u_mouse = gl.getUniformLocation(program, 'u_mouse');
+
+  // Cap DPR: full retina resolution on a fullscreen shader is expensive
+  // for very little visible sharpness gain on a soft, blurry aurora.
+  const MAX_DPR = 1.5;
+  let dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+
+  let mouseTarget = { x: 0.7, y: 0.4 }; // start near where the original glow sat
+  let mouseSmoothed = { x: 0.7, y: 0.4 };
+
+  function resize() {
+    const rect = heroSection.getBoundingClientRect();
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  heroSection.addEventListener('mousemove', (e) => {
+    const rect = heroSection.getBoundingClientRect();
+    mouseTarget.x = (e.clientX - rect.left) / rect.width;
+    mouseTarget.y = 1.0 - (e.clientY - rect.top) / rect.height; // flip to GL's bottom-up Y
+  });
+
+  let running = true;
+  document.addEventListener('visibilitychange', () => {
+    running = !document.hidden; // pause the loop on a hidden tab
+    if (running) requestAnimationFrame(render);
+  });
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  const start = performance.now();
+  function render(now) {
+    if (!running) return;
+    const t = (now - start) / 1000;
+
+    // Lerp toward the real mouse position rather than snapping — a jump
+    // in the flow field reads as a glitch, not an interaction.
+    mouseSmoothed.x += (mouseTarget.x - mouseSmoothed.x) * 0.06;
+    mouseSmoothed.y += (mouseTarget.y - mouseSmoothed.y) * 0.06;
+
+    gl.uniform2f(u_resolution, canvas.width, canvas.height);
+    gl.uniform1f(u_time, t);
+    gl.uniform2f(u_mouse, mouseSmoothed.x, mouseSmoothed.y);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    requestAnimationFrame(render);
+  }
+
+  requestAnimationFrame(render);
+  requestAnimationFrame(() => canvas.classList.add('is-ready')); // fade in once a frame exists
 })();
 </script>
 
