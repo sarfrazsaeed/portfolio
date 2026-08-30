@@ -18,6 +18,8 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- Lenis — inertia/smooth-scroll used on Awwwards-tier agency sites; wired to the GSAP ticker below so ScrollTrigger stays in sync -->
+  <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
   <style>
     /* ── TOKENS ── */
     :root {
@@ -70,7 +72,7 @@
       border-bottom: 1px solid transparent;
       transition: background 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
     }
-    nav.scrolled { background: rgba(10,10,11,0.92); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-color: var(--rule); }
+    nav.scrolled { background: rgba(10,10,11,0.97); border-color: var(--rule); }
 
     .nav-logo { font-family: var(--sans); font-size: 1.05rem; font-weight: 600; color: var(--text); letter-spacing: 0.02em; text-transform: uppercase; }
     .nav-logo em { color: var(--accent); font-style: normal; }
@@ -697,7 +699,7 @@
     #progress-bar { height: 2px; background: linear-gradient(90deg, #8f6fff 0%, #b996ff 42%, #f0bd70 100%); box-shadow: 0 0 14px rgba(155,123,255,.72); }
     #grain { opacity: .055; }
     nav { height: 76px; max-width: 1440px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 4rem); }
-    nav.scrolled { background: rgba(7,6,13,.75); border-color: rgba(255,255,255,.1); }
+    nav.scrolled { background: rgba(7,6,13,.97); border-color: rgba(255,255,255,.1); }
     .nav-logo { font-size: 1rem; letter-spacing: .12em; font-weight: 800; }
     .nav-logo em { color: var(--gold); }
     .nav-links { gap: clamp(.9rem, 2vw, 2rem); }
@@ -844,7 +846,8 @@
     <li><a href="#contact">Contact</a></li>
   </ul>
   <button class="command-trigger" id="command-trigger" type="button" aria-label="Open command menu">Menu <kbd>⌘ K</kbd></button>
-  <a href="mailto:sarfrazsaeed095@gmail.com" class="nav-hire">Hire Me</a>
+  <span id="hire-badge-root"></span>
+  <a href="mailto:sarfrazsaeed095@gmail.com" class="nav-hire" id="nav-hire-fallback">Hire Me</a>
   <button id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 <div id="progress-bar"></div>
@@ -1343,6 +1346,24 @@
 <script>
 gsap.registerPlugin(ScrollTrigger);
 
+/* ── SMOOTH SCROLL (Lenis, synced to the GSAP ticker) ──
+   Skipped under prefers-reduced-motion so the site still respects that
+   setting exactly like the shader hero and Three.js orb do. */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let lenis;
+if (window.Lenis && !prefersReducedMotion) {
+  lenis = new Lenis({
+    duration: 1.15,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smoothWheel: true,
+  });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add(time => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+  // Command palette / back-to-top / nav links call scrollIntoView / window.scrollTo
+  // directly — Lenis intercepts those too so the momentum feel stays consistent.
+}
+
 /* ── INTRO LOADER ── */
 const loaderRail = document.querySelector('.loader-rail span');
 if (loaderRail) gsap.to(loaderRail, { scaleX: 1, duration: .7, ease: 'power3.inOut' });
@@ -1354,13 +1375,13 @@ window.addEventListener('load', () => {
 const bar = document.getElementById('progress-bar');
 const scrollPercent = document.getElementById('scroll-percent');
 const backToTop = document.getElementById('back-to-top');
-window.addEventListener('scroll', () => {
+function updateProgressBar() {
   const available = document.documentElement.scrollHeight - window.innerHeight;
   const progress = available > 0 ? Math.min(100, Math.max(0, window.scrollY / available * 100)) : 0;
   bar.style.width = progress + '%';
   if (scrollPercent) scrollPercent.textContent = String(Math.round(progress)).padStart(2, '0') + '%';
   if (backToTop) backToTop.classList.toggle('visible', window.scrollY > 600);
-});
+}
 if (backToTop) backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 /* ── NAV SCROLL & ACTIVE LINKS ── */
@@ -1386,7 +1407,25 @@ function updateActiveNav() {
   navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active));
 }
 
-window.addEventListener('scroll', updateActiveNav, { passive: true });
+/* ── SINGLE THROTTLED SCROLL HANDLER ──
+   Both the progress bar and the active-nav highlighting used to run on
+   their own separate 'scroll' listeners, each firing on every raw scroll
+   event (which can be 60+ times/sec) and each doing DOM measurement work.
+   Merging them into one requestAnimationFrame-throttled handler caps that
+   work to once per repaint, which is what removes the stutter/trembling
+   feel while scrolling. */
+let scrollTicking = false;
+function onScrollFrame() {
+  updateProgressBar();
+  updateActiveNav();
+  scrollTicking = false;
+}
+window.addEventListener('scroll', () => {
+  if (!scrollTicking) {
+    requestAnimationFrame(onScrollFrame);
+    scrollTicking = true;
+  }
+}, { passive: true });
 
 /* ── HAMBURGER ── */
 const hb = document.getElementById('hamburger');
@@ -1548,7 +1587,13 @@ ScrollTrigger.create({
   onEnter: () => gsap.from('.proj', { opacity: 0, y: 28, duration: 0.6, stagger: 0.1, ease: 'power3.out', clearProps: 'all' }),
   once: true
 });
-/* ── TECH ORB — scroll-linked camera dolly ── */
+
+/* ── TECH ORB — scroll-linked camera dolly ──
+   Drives the Three.js orb (three-scene.js) purely off scroll position as
+   the visitor passes through #tech-orb: window.setTechOrbScrollProgress
+   is the hook three-scene.js exposes for this. scrub:true ties it
+   directly to scroll position (no easing lag), same as a native camera
+   move you'd get in a After-Effects-style scrollytelling piece. */
 if (document.getElementById('tech-orb-canvas')) {
   ScrollTrigger.create({
     trigger: '#tech-orb',
@@ -1602,24 +1647,8 @@ if (document.getElementById('tech-orb-canvas')) {
   });
 })();
 
-/* ── PROJECT FILTERS — Live / In Progress / All ── */
-(function () {
-  const buttons = document.querySelectorAll('.proj-filter-btn');
-  const projects = document.querySelectorAll('#proj-list .proj');
-  if (!buttons.length || !projects.length) return;
-
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const filter = btn.getAttribute('data-filter');
-      projects.forEach(proj => {
-        const match = filter === 'all' || proj.getAttribute('data-filter') === filter;
-        proj.classList.toggle('proj-hidden', !match);
-      });
-    });
-  });
-})();
+/* ── PROJECT FILTERS — now driven by a Zustand vanilla store,
+   see the <script type="module"> near the bottom of the page ── */
 
 /* ── SIGNATURE HERO SHADER ──
    A fullscreen fragment shader replacing the static hero gradient.
@@ -1841,5 +1870,63 @@ if (document.getElementById('tech-orb-canvas')) {
 })();
 </script>
 <script type="module" src="three-scene.js"></script>
+
+<!-- Framer Motion — spring-physics "Hire Me" badge.
+     Progressive enhancement: the plain mailto link (#nav-hire-fallback)
+     stays in the DOM and fully works with zero JS. If this module loads,
+     it hides the fallback and mounts a motion.a in its place with real
+     spring physics on hover/tap — not a CSS transition impersonating one. -->
+<script type="module">
+  import React from 'https://esm.sh/react@18';
+  import { createRoot } from 'https://esm.sh/react-dom@18/client';
+  import { motion } from 'https://esm.sh/framer-motion@11?deps=react@18,react-dom@18';
+
+  const root = document.getElementById('hire-badge-root');
+  const fallback = document.getElementById('nav-hire-fallback');
+  if (root) {
+    createRoot(root).render(
+      React.createElement(motion.a, {
+        href: 'mailto:sarfrazsaeed095@gmail.com',
+        className: 'nav-hire',
+        whileHover: { scale: 1.06 },
+        whileTap: { scale: 0.94 },
+        transition: { type: 'spring', stiffness: 400, damping: 17 }
+      }, 'Hire Me')
+    );
+    if (fallback) fallback.style.display = 'none';
+  }
+</script>
+
+<!-- Zustand — vanilla store (no React needed) driving the project filter.
+     createStore + subscribe is the same pattern used in the actual
+     production apps this portfolio links to (FoodieX, ShopNest) for
+     cart/wishlist state — here it's doing the same job for the
+     Live / In Progress / All toggle instead of a bag of DOM classList
+     calls in an inline IIFE. -->
+<script type="module">
+  import { createStore } from 'https://esm.sh/zustand@4/vanilla';
+
+  const buttons = Array.from(document.querySelectorAll('.proj-filter-btn'));
+  const projects = Array.from(document.querySelectorAll('#proj-list .proj'));
+
+  if (buttons.length && projects.length) {
+    const filterStore = createStore(() => ({ filter: 'all' }));
+
+    function render() {
+      const { filter } = filterStore.getState();
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+      projects.forEach(proj => {
+        const match = filter === 'all' || proj.dataset.filter === filter;
+        proj.classList.toggle('proj-hidden', !match);
+      });
+    }
+
+    filterStore.subscribe(render);
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => filterStore.setState({ filter: btn.dataset.filter }));
+    });
+    render(); // paint initial state
+  }
+</script>
 </body>
 </html>
